@@ -6,17 +6,21 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // TODO: Replace these with your Supabase project values
   const String supabaseUrl = 'https://zfrllrwqndzgfwbtnokl.supabase.co';
   const String supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpmcmxscndxbmR6Z2Z3YnRub2tsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxMDg3MjgsImV4cCI6MjA3OTY4NDcyOH0.gXvK2t3X_bUtd9EU9NjViSxcu6Whab5jq1lGUvus3sU';
+
 
   await Supabase.initialize(
     url: supabaseUrl,
     anonKey: supabaseAnonKey,
   );
 
+  // Now Supabase.instance exists → safe
+  Get.put(ServiceController());
+
   runApp(MyApp());
 }
+
 
 /// Simple Service model
 class Service {
@@ -134,11 +138,11 @@ class ServiceController extends GetxController {
       isLoading.value = true;
       final res = await supabase.from('services').select().order('created_at', ascending: false);
       // supabase returns List<dynamic>
-      if (res.error != null) {
-        // In newer supabase_flutter, errors are thrown; still handle defensively
-        print('Supabase error: ${res.error}');
-        return;
-      }
+      // if (res.error != null) {
+      //   // In newer supabase_flutter, errors are thrown; still handle defensively
+      //   print('Supabase error: ${res.error}');
+      //   return;
+      // }
       final data = res as List<dynamic>;
       services.value = data.map((e) {
         if (e is Map<String, dynamic>) return Service.fromMap(e);
@@ -224,8 +228,6 @@ class ServiceController extends GetxController {
 
 class MyApp extends StatelessWidget {
   MyApp({Key? key}) : super(key: key);
-
-  final ServiceController controller = Get.put(ServiceController());
 
   @override
   Widget build(BuildContext context) {
@@ -348,21 +350,25 @@ class ServiceDetailPage extends StatelessWidget {
             // Steps with checkboxes
             Expanded(
               flex: 3,
-              child: Obx(() {
-                final steps = svc.steps;
-                final completed = ctrl.stepCompleted;
-                return ListView.builder(
-                  itemCount: steps.length,
-                  itemBuilder: (context, i) {
+              child: ListView.builder(
+                itemCount: svc.steps.length,
+                itemBuilder: (context, i) {
+                  return Obx(() {
                     return CheckboxListTile(
-                      title: Text('${i + 1}. ${steps[i]}'),
-                      value: (i < completed.length) ? completed[i] : false,
+                      key: ValueKey(i),
+                      title: Text('${i + 1}. ${svc.steps[i]}'),
+                      value: ctrl.stepCompleted[i],
                       onChanged: (_) => ctrl.toggleStep(i),
                     );
-                  },
-                );
-              }),
+                  });
+                },
+              ),
             ),
+
+
+
+
+
 
             // Buttons
             Row(
