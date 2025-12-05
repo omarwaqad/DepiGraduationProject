@@ -2,6 +2,7 @@
 // import 'package:delleni_app/mainold.dart';
 import 'package:delleni_app/app/controllers/service_controller.dart';
 import 'package:delleni_app/app/pages/home_page.dart';
+import 'package:delleni_app/app/pages/login.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -17,11 +18,12 @@ void main() async {
   // Register GetX controllers
   Get.put(ServiceController());
 
-  runApp(const Delleni());
+  runApp(Delleni());
 }
-
+final global = Supabase.instance.client;
 class Delleni extends StatelessWidget {
-  const Delleni({super.key});
+   Delleni({super.key});
+
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +40,7 @@ class Delleni extends StatelessWidget {
           foregroundColor: Colors.black,
         ),
       ),
-      home: HomePage(),
+      home: Login(),
     );
   }
 }
