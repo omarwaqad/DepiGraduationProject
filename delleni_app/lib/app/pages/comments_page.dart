@@ -105,18 +105,9 @@ class CommentsPage extends StatelessWidget {
                   onPressed: () async {
                     final content = textCtrl.text.trim();
                     if (content.isEmpty) return;
-                    // ask for username if not saved
-                    final prefs = await SharedPreferences.getInstance();
-                    var username = prefs.getString('delleni_username') ?? '';
-                    if (username.isEmpty) {
-                      final name = await _askForUsername(context);
-                      if (name == null || name.trim().isEmpty) {
-                        Get.snackbar('No username', 'Comment cancelled (no username provided).');
-                        return;
-                      }
-                      username = name;
-                    }
-                    await ctrl.addComment(username, content);
+
+                    // Add the comment using the logged-in user's name
+                    await ctrl.addComment(content);
                     textCtrl.clear();
                     Get.snackbar('Comment added', 'Your comment was posted.');
                   },

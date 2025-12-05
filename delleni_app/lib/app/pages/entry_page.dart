@@ -1,7 +1,6 @@
 import 'package:delleni_app/app/models/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'login.dart';
 
 class EntryPage extends StatelessWidget {

@@ -136,36 +136,57 @@ class ServiceController extends GetxController {
       isCommentsLoading.value = false;
     }
   }
+  Future<String?> getLoggedInUsername() async {
+    try {
+      final userId = supabase.auth.currentUser?.id;
+      if (userId == null) return null;
 
-  /// Post a comment with username; tries to write to Supabase, if fails save locally.
-  Future<void> addComment(String username, String content) async {
+      final response = await supabase
+          .from('users')
+          .select('first_name, last_name')
+          .eq('id', userId)
+          .single();
+
+      if (response != null) {
+        final firstName = response['first_name'] ?? '';
+        final lastName = response['last_name'] ?? '';
+        return '$firstName $lastName'.trim();
+      }
+    } catch (e) {
+      print('Error fetching username: $e');
+    }
+    return null;
+  }
+  Future<void> addComment(String content) async {
     final svc = selectedService.value;
     if (svc == null) return;
+
+    final username = await getLoggedInUsername() ?? 'Anonymous';
 
     final comment = CommentModel(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       serviceId: svc.id,
-      username: username.isNotEmpty ? username : 'Anonymous',
+      username: username,
       content: content,
       likes: 0,
       createdAt: DateTime.now(),
     );
 
-    // optimistic append locally
+    // Optimistic append locally
     comments.insert(0, comment);
     comments.refresh();
 
-    // try to insert to server (assumes comments table has username, content, likes)
+    // Try to insert to server
     try {
       await supabase.from('comments').insert(comment.toMapForInsert());
-      // refetch to get server canonical data (with id)
-      await fetchCommentsForSelectedService();
+      await fetchCommentsForSelectedService(); // Refetch to sync
     } catch (e) {
-      print('Failed to insert comment to server: $e — storing locally for now');
-      // store in local fallback
+      print('Failed to insert comment to server: $e');
       localCommentFallback.putIfAbsent(svc.id, () => []).insert(0, comment);
     }
   }
+
+  // /// Post a comment with username; tries to write to Supabase, if fails save locally.
 
   Future<void> likeComment(CommentModel c) async {
     // optimistic local increment
