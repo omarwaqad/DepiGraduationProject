@@ -3,13 +3,14 @@ import 'dart:convert';
 import 'package:delleni_app/app/models/comments.dart';
 import 'package:delleni_app/app/models/location.dart';
 import 'package:delleni_app/app/models/service.dart';
+import 'package:delleni_app/app/models/user_progress.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ServiceController extends GetxController {
   final supabase = Supabase.instance.client;
-  SharedPreferences? prefs;
+  late Box<UserProgress> progressBox;
 
   var isLoading = false.obs;
   var services = <Service>[].obs;
@@ -30,12 +31,12 @@ class ServiceController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _initPrefs();
+    _initHive();
     fetchServices();
   }
 
-  Future<void> _initPrefs() async {
-    prefs = await SharedPreferences.getInstance();
+  Future<void> _initHive() async {
+    progressBox = await Hive.openBox<UserProgress>('user_progress');
   }
 
   Future<void> fetchServices() async {
@@ -58,13 +59,19 @@ class ServiceController extends GetxController {
   Future<void> selectService(Service service) async {
     selectedService.value = service;
 
-    // try to load from shared prefs
-    final key = _prefsKeyForService(service.id);
-    final raw = prefs?.getString(key);
-    if (raw != null) {
+    final userId = supabase.auth.currentUser?.id;
+    if (userId == null) {
+      stepCompleted.value = List<bool>.filled(service.steps.length, false);
+      return;
+    }
+
+    // try to load from hive
+    final key = _hiveKeyForUserService(userId, service.id);
+    final progress = progressBox.get(key);
+
+    if (progress != null) {
       try {
-        final parsed = json.decode(raw) as List<dynamic>;
-        stepCompleted.value = parsed.map((e) => e == true).toList();
+        stepCompleted.value = progress.stepsCompleted;
         // ensure length matches steps
         if (stepCompleted.length != service.steps.length) {
           stepCompleted.value = List<bool>.filled(service.steps.length, false);
@@ -86,13 +93,22 @@ class ServiceController extends GetxController {
     await fetchCommentsForSelectedService();
   }
 
-  String _prefsKeyForService(String serviceId) => 'delleni_steps_$serviceId';
+  String _hiveKeyForUserService(String userId, String serviceId) =>
+      '${userId}_$serviceId';
 
   Future<void> _saveProgressForService(String serviceId) async {
-    if (prefs == null) prefs = await SharedPreferences.getInstance();
-    if (prefs == null) return;
-    final key = _prefsKeyForService(serviceId);
-    await prefs!.setString(key, json.encode(stepCompleted));
+    final userId = supabase.auth.currentUser?.id;
+    if (userId == null) return;
+
+    final key = _hiveKeyForUserService(userId, serviceId);
+    final progress = UserProgress(
+      userId: userId,
+      serviceId: serviceId,
+      stepsCompleted: stepCompleted.toList(),
+      lastUpdated: DateTime.now(),
+    );
+
+    await progressBox.put(key, progress);
   }
 
   void toggleStep(int index) {
