@@ -1,7 +1,9 @@
 // lib/app/pages/service_detail_page.dart
+
 import 'package:delleni_app/app/controllers/service_controller.dart';
 import 'package:delleni_app/app/models/service.dart';
 import 'package:delleni_app/app/pages/comments_page.dart';
+import 'package:delleni_app/app/pages/locations_sheet.dart'; // <-- ADDED
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -32,13 +34,14 @@ class ServiceDetailPage extends StatelessWidget {
             child: Column(
               children: [
                 _buildHeader(context, svc.serviceName),
-                // everything depends on stepCompleted → wrap in Obx
+
                 Obx(() {
                   final int totalSteps = svc.steps.length;
                   final int completedSteps = ctrl.stepCompleted
                       .where((done) => done)
                       .length
                       .clamp(0, totalSteps);
+
                   final double progress = totalSteps == 0
                       ? 0.0
                       : (completedSteps / totalSteps);
@@ -53,9 +56,11 @@ class ServiceDetailPage extends StatelessWidget {
                           progress,
                         ),
                       ),
+
                       _buildQuickInfoRow(),
                       _buildDocumentsSection(svc),
                       _buildStepsSection(svc),
+
                       const SizedBox(height: 12),
                       _buildCommentsButton(),
                       const SizedBox(height: 16),
@@ -174,7 +179,6 @@ class ServiceDetailPage extends StatelessWidget {
 
   // ================= QUICK INFO ROW =================
   Widget _buildQuickInfoRow() {
-    final ServiceController ctrl = Get.find();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
@@ -196,7 +200,7 @@ class ServiceDetailPage extends StatelessWidget {
               icon: Icons.location_on_rounded,
               label: 'أقرب مكتب',
               value: 'عرض المواقع',
-              // The action button inside the card needs controller access; wrap the card outside if you want full control.
+              onTap: () => _openLocationsSheet(), // <-- ADDED
             ),
           ),
         ],
@@ -354,9 +358,7 @@ class ServiceDetailPage extends StatelessWidget {
             ),
             elevation: 4,
           ),
-          onPressed: () {
-            // TODO: connect to actual flow
-          },
+          onPressed: () {},
           child: const Text(
             'ابدأ الإجراء الآن',
             style: TextStyle(
@@ -367,6 +369,17 @@ class ServiceDetailPage extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  // ================= OPEN LOCATION SHEET =================
+  void _openLocationsSheet() async {
+    await ctrl.ensureLocationPermissionAndFetch();
+    showModalBottomSheet(
+      context: Get.context!,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => LocationsSheet(),
     );
   }
 
@@ -385,6 +398,7 @@ class _QuickInfoCard extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
+  final VoidCallback? onTap; // <-- ADDED
 
   const _QuickInfoCard({
     Key? key,
@@ -393,56 +407,62 @@ class _QuickInfoCard extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.value,
+    this.onTap, // <-- ADDED
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: iconBgColor,
-              borderRadius: BorderRadius.circular(12),
+    return InkWell(
+      // <-- ADDED
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
             ),
-            child: Icon(icon, color: iconColor, size: 22),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: const TextStyle(fontSize: 11, color: Colors.grey),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: Colors.black87,
-                    fontWeight: FontWeight.w600,
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: iconBgColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: iconColor, size: 22),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: const TextStyle(fontSize: 11, color: Colors.grey),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 2),
+                  Text(
+                    value,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -477,7 +497,6 @@ class _StepCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // indicator circle
               Container(
                 width: 34,
                 height: 34,
@@ -501,7 +520,6 @@ class _StepCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              // content
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
