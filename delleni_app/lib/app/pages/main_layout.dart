@@ -1,5 +1,4 @@
 // lib/app/pages/main_layout.dart
-import 'package:delleni_app/app/pages/locations.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:delleni_app/app/controllers/home_controller.dart';
@@ -20,7 +19,10 @@ class _MainLayoutState extends State<MainLayout> {
   final List<Widget> _pages = [
     HomeContent(), // Just the content part without navigation
     UserProgressScreen(),
-    LocationsPage(),
+    Container(
+      // Placeholder for Places page
+      child: Center(child: Text('الأماكن - قيد التطوير')),
+    ),
     SocietyPage(),
     Container(
       // Placeholder for Profile page
