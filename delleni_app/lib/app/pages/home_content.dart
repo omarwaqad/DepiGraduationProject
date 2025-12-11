@@ -1,13 +1,8 @@
-// lib/app/pages/home_page.dart
-
-import 'package:delleni_app/app/controllers/home_controller.dart';
+// lib/app/pages/home_content.dart
 import 'package:delleni_app/app/controllers/service_controller.dart';
 import 'package:delleni_app/app/pages/service_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:delleni_app/app/pages/user_progress_screen.dart';
-
-import 'package:delleni_app/app/pages/society_page.dart';
 
 const Color kPrimaryGreen = Color(0xFF219A6D);
 const Color kSecondaryOrange = Color(0xFFDD755A);
@@ -65,77 +60,28 @@ const Map<String, ServiceUIConfig> serviceUIMap = {
   ),
 };
 
-class HomePage extends StatelessWidget {
-  HomePage({Key? key}) : super(key: key);
+class HomeContent extends StatelessWidget {
+  HomeContent({Key? key}) : super(key: key);
 
   final ServiceController serviceCtrl = Get.find<ServiceController>();
-  final HomeController homeCtrl = Get.put(HomeController(), permanent: true);
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl, // RTL forced
-      child: Scaffold(
-        backgroundColor: kBackgroundGrey,
-        bottomNavigationBar: Obx(
-          () => BottomNavigationBar(
-            currentIndex: homeCtrl.currentIndex.value,
-            onTap: (index) {
-              homeCtrl.onTabChanged(index); // update selected tab state
-
-              if (index == 1) {
-                // طلباتي
-                Get.to(() => const UserProgressScreen());
-              }
-            },
-            type: BottomNavigationBarType.fixed,
-            selectedItemColor: kPrimaryGreen,
-            unselectedItemColor: Colors.grey,
-            showUnselectedLabels: true,
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home_outlined),
-                activeIcon: Icon(Icons.home_rounded),
-                label: 'الرئيسية',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.receipt_long_outlined),
-                activeIcon: Icon(Icons.receipt_long_rounded),
-                label: 'طلباتي',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.place_outlined),
-                activeIcon: Icon(Icons.place_rounded),
-                label: 'الأماكن',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.groups_outlined),
-                activeIcon: Icon(Icons.groups_rounded),
-                label: 'المجتمع',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.person_outline_rounded),
-                activeIcon: Icon(Icons.person_rounded),
-                label: 'حسابي',
-              ),
+    return Scaffold(
+      backgroundColor: kBackgroundGrey,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              _buildHeader(context),
+              const SizedBox(height: 12),
+              _buildVisionBanner(),
+              const SizedBox(height: 16),
+              _buildServicesTitle(),
+              const SizedBox(height: 8),
+              _buildServicesSection(),
+              const SizedBox(height: 24),
             ],
-          ),
-        ),
-
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                _buildHeader(context),
-                const SizedBox(height: 12),
-                _buildVisionBanner(),
-                const SizedBox(height: 16),
-                _buildServicesTitle(),
-                const SizedBox(height: 8),
-                _buildServicesSection(),
-                const SizedBox(height: 24),
-              ],
-            ),
           ),
         ),
       ),
@@ -317,7 +263,7 @@ class HomePage extends StatelessWidget {
       child: GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: serviceCtrl.services.length, // from Supabase
+        itemCount: serviceCtrl.services.length,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           mainAxisSpacing: 12,
@@ -326,8 +272,6 @@ class HomePage extends StatelessWidget {
         ),
         itemBuilder: (context, index) {
           final s = serviceCtrl.services[index];
-
-          // Optional custom icon/color based on Arabic name
           final ui = serviceUIMap[s.serviceName];
 
           final icon = ui?.icon ?? Icons.widgets_rounded;
@@ -349,7 +293,6 @@ class HomePage extends StatelessWidget {
 }
 
 // ================= REUSABLE SERVICE CARD =================
-
 class ServiceCard extends StatelessWidget {
   final String title;
   final IconData icon;

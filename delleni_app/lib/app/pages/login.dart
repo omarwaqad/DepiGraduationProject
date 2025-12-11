@@ -1,4 +1,4 @@
-import 'package:delleni_app/app/pages/home_page.dart';
+import 'package:delleni_app/app/pages/main_layout.dart';
 import 'package:delleni_app/app/pages/register_page.dart';
 import 'package:flutter/material.dart';
 
@@ -209,7 +209,10 @@ class Login extends StatelessWidget {
                                     content: Text('Login successful'),
                                   ),
                                 );
-                                Get.off(HomePage());
+                                // In login.dart, after successful authentication
+                                Get.offAll(
+                                  () => MainLayout(),
+                                ); // Instead of HomePage()
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(content: Text('Login failed')),
