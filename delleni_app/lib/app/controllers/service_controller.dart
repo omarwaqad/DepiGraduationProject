@@ -265,6 +265,45 @@ class ServiceController extends GetxController {
       isCommentsLoading.value = false;
     }
   }
+  // In service_controller.dart, add this method to ServiceController class:
+
+  /// Fetch all comments from all services (for society page)
+  Future<List<CommentModel>> fetchAllComments() async {
+    try {
+      // Fetch all comments from server
+      final res = await supabase
+          .from('comments')
+          .select()
+          .order('created_at', ascending: false);
+
+      final serverComments = (res as List<dynamic>)
+          .map((e) => CommentModel.fromMap(Map<String, dynamic>.from(e)))
+          .toList();
+
+      // Add local fallback comments
+      final allLocalComments = localCommentFallback.values
+          .expand((comments) => comments)
+          .toList();
+
+      // Combine and sort by date (newest first)
+      final allComments = [...serverComments, ...allLocalComments];
+      allComments.sort(
+        (a, b) =>
+            (b.createdAt ?? DateTime(0)).compareTo(a.createdAt ?? DateTime(0)),
+      );
+
+      return allComments;
+    } catch (e) {
+      print('fetchAllComments error: $e');
+      // Return only local comments if server fails
+      return localCommentFallback.values.expand((comments) => comments).toList()
+        ..sort(
+          (a, b) => (b.createdAt ?? DateTime(0)).compareTo(
+            a.createdAt ?? DateTime(0),
+          ),
+        );
+    }
+  }
 
   /// Get logged-in username from `users` table (first_name + last_name)
   Future<String?> getLoggedInUsername() async {

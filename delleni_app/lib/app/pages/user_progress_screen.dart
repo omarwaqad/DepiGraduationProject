@@ -1,20 +1,11 @@
+// lib/app/pages/user_progress_screen.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:delleni_app/app/controllers/service_controller.dart';
 import 'package:delleni_app/app/models/service.dart';
-import 'package:delleni_app/app/pages/home_page.dart';
 
 class UserProgressScreen extends StatelessWidget {
   const UserProgressScreen({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ServicesTrackingPage();
-  }
-}
-
-class ServicesTrackingPage extends StatelessWidget {
-  const ServicesTrackingPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -25,10 +16,8 @@ class ServicesTrackingPage extends StatelessWidget {
 
     return Directionality(
       textDirection: TextDirection.rtl,
-
       child: Scaffold(
         backgroundColor: Colors.grey[50],
-        bottomNavigationBar: _buildBottomNav(context),
         body: CustomScrollView(
           slivers: [
             // Header with gradient
@@ -670,52 +659,6 @@ class ServicesTrackingPage extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildBottomNav(BuildContext context) {
-    return BottomNavigationBar(
-      currentIndex: 1, // طلباتي
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: const Color(0xFF219A6D),
-      unselectedItemColor: Colors.grey,
-      showUnselectedLabels: true,
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home_outlined),
-          activeIcon: Icon(Icons.home_rounded),
-          label: 'الرئيسية',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.receipt_long_outlined),
-          activeIcon: Icon(Icons.receipt_long_rounded),
-          label: 'طلباتي',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.place_outlined),
-          activeIcon: Icon(Icons.place_rounded),
-          label: 'الأماكن',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.groups_outlined),
-          activeIcon: Icon(Icons.groups_rounded),
-          label: 'المجتمع',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person_outline_rounded),
-          activeIcon: Icon(Icons.person_rounded),
-          label: 'حسابي',
-        ),
-      ],
-      onTap: (index) {
-        if (index == 0) {
-          Get.offAll(() => HomePage());
-        } else if (index == 1) {
-          return;
-        } else {
-          // no action for now
-        }
-      },
     );
   }
 
