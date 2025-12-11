@@ -1,6 +1,6 @@
+import 'package:delleni_app/app/controllers/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:delleni_app/app/controllers/profile_controller.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({Key? key}) : super(key: key);
