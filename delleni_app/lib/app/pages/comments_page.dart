@@ -1,5 +1,4 @@
 // lib/app/pages/comments_page.dart
-
 import 'package:delleni_app/app/controllers/service_controller.dart';
 import 'package:delleni_app/app/models/comments.dart';
 import 'package:flutter/material.dart';
@@ -17,9 +16,6 @@ class CommentsPage extends StatefulWidget {
 
 class _CommentsPageState extends State<CommentsPage> {
   final ServiceController ctrl = Get.find<ServiceController>();
-class CommentsPage extends StatelessWidget {
-  CommentsPage({super.key});
-  final ServiceController ctrl = Get.find();
   final TextEditingController textCtrl = TextEditingController();
 
   @override

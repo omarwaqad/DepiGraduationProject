@@ -229,10 +229,6 @@ class ServiceController extends GetxController {
       final list = (res as List<dynamic>)
           .map((e) => LocationModel.fromMap(Map<String, dynamic>.from(e)))
           .toList();
-
-      final list = (res as List<dynamic>)
-          .map((e) => LocationModel.fromMap(Map<String, dynamic>.from(e)))
-          .toList();
       locations.value = list;
     } catch (e) {
       // ignore: avoid_print
@@ -259,9 +255,6 @@ class ServiceController extends GetxController {
           .map((e) => CommentModel.fromMap(Map<String, dynamic>.from(e)))
           .toList();
 
-      final list = (res as List<dynamic>)
-          .map((e) => CommentModel.fromMap(Map<String, dynamic>.from(e)))
-          .toList();
       comments.value = list;
     } catch (e) {
       // ignore: avoid_print
