@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LocationsSheet extends StatelessWidget {
-  LocationsSheet({Key? key}) : super(key: key);
+  LocationsSheet({super.key});
   final ServiceController ctrl = Get.find();
 
   @override
