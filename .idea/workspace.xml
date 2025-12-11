@@ -9,17 +9,11 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ee955dd5-b5b5-4658-90e4-d83f0a456dd9" name="Changes" comment=" fix(ui): resolve merge conflicts &amp; restore ServiceDetailPage and CommentsPage compile errors&#10; &#10; - remove duplicated class/constructor declarations&#10; - fix widget tree structure and missing braces&#10; - stabilize comments input/submit flow and stepper rendering">
-      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/home_content.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/main_layout.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/society_page.dart" afterDir="false" />
+    <list default="true" id="ee955dd5-b5b5-4658-90e4-d83f0a456dd9" name="Changes" comment=".">
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/locations.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/controllers/service_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/controllers/service_controller.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/home_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/home_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/login.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/login.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/service_detail_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/service_detail_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/user_progress_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/user_progress_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/delleni_app/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/main_layout.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/main_layout.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -238,7 +232,39 @@
       <option name="project" value="LOCAL" />
       <updated>1765466991670</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="feat(service): add location sheet integration to ServiceDetailPage&#10;&#10;- Added onTap support to QuickInfoCard&#10;- Connected &quot;أقرب مكتب / عرض المواقع&quot; to open LocationsSheet&#10;- Added _openLocationsSheet() with permission handling&#10;- Updated imports for locations_sheet.dart&#10;- Cleaned QuickInfoCard to wrap card with InkWell">
+      <option name="closed" value="true" />
+      <created>1765490100651</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1765490100651</updated>
+    </task>
+    <task id="LOCAL-00006" summary="&quot;feat: restructure navigation with MainLayout for consistent bottom nav&#10;&#10;- Create MainLayout.dart to handle bottom navigation for entire app&#10;- Split HomePage into HomeContent (content only) and MainLayout (navigation)&#10;- Remove bottom navigation from SocietyPage and UserProgressScreen&#10;- Update main.dart to use MainLayout after login&#10;- Simplify page structure: Login → MainLayout → All pages with persistent nav">
+      <option name="closed" value="true" />
+      <created>1765490197046</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1765490197046</updated>
+    </task>
+    <task id="LOCAL-00007" summary="feat(society): add SocietyPage community screen synced with comments&#10;&#10;- Implemented SocietyPage UI (stats, contributors, community tips)&#10;- Synced comment list with ServiceController.comments&#10;- Added like interactions and time-ago formatting&#10;- Removed replies logic (not used in current model)&#10;- Prepared page for integration with bottom navigation (&quot;المجتمع&quot;)">
+      <option name="closed" value="true" />
+      <created>1765490241725</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1765490241726</updated>
+    </task>
+    <task id="LOCAL-00008" summary=".">
+      <option name="closed" value="true" />
+      <created>1765490266969</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1765490266969</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -267,7 +293,11 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="feat(location): enable permission request, current position fetch, and open Google Maps directions from LocationsSheet" />
     <MESSAGE value=" fix(ui): resolve merge conflicts &amp; restore ServiceDetailPage and CommentsPage compile errors&#10; &#10; - remove duplicated class/constructor declarations&#10; - fix widget tree structure and missing braces&#10; - stabilize comments input/submit flow and stepper rendering" />
-    <option name="LAST_COMMIT_MESSAGE" value=" fix(ui): resolve merge conflicts &amp; restore ServiceDetailPage and CommentsPage compile errors&#10; &#10; - remove duplicated class/constructor declarations&#10; - fix widget tree structure and missing braces&#10; - stabilize comments input/submit flow and stepper rendering" />
+    <MESSAGE value="feat(service): add location sheet integration to ServiceDetailPage&#10;&#10;- Added onTap support to QuickInfoCard&#10;- Connected &quot;أقرب مكتب / عرض المواقع&quot; to open LocationsSheet&#10;- Added _openLocationsSheet() with permission handling&#10;- Updated imports for locations_sheet.dart&#10;- Cleaned QuickInfoCard to wrap card with InkWell" />
+    <MESSAGE value="&quot;feat: restructure navigation with MainLayout for consistent bottom nav&#10;&#10;- Create MainLayout.dart to handle bottom navigation for entire app&#10;- Split HomePage into HomeContent (content only) and MainLayout (navigation)&#10;- Remove bottom navigation from SocietyPage and UserProgressScreen&#10;- Update main.dart to use MainLayout after login&#10;- Simplify page structure: Login → MainLayout → All pages with persistent nav" />
+    <MESSAGE value="feat(society): add SocietyPage community screen synced with comments&#10;&#10;- Implemented SocietyPage UI (stats, contributors, community tips)&#10;- Synced comment list with ServiceController.comments&#10;- Added like interactions and time-ago formatting&#10;- Removed replies logic (not used in current model)&#10;- Prepared page for integration with bottom navigation (&quot;المجتمع&quot;)" />
+    <MESSAGE value="." />
+    <option name="LAST_COMMIT_MESSAGE" value="." />
   </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">

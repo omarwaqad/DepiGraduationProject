@@ -236,6 +236,25 @@ class ServiceController extends GetxController {
     }
   }
 
+  /// Fetch ALL locations from the database (not tied to a specific service)
+  Future<void> fetchAllLocations() async {
+    try {
+      final res = await supabase
+          .from('locations')
+          .select()
+          .order('name', ascending: true);
+
+      final list = (res as List<dynamic>)
+          .map((e) => LocationModel.fromMap(Map<String, dynamic>.from(e)))
+          .toList();
+
+      locations.value = list;
+    } catch (e) {
+      print('fetchAllLocations error: $e');
+      Get.snackbar("خطأ", "حدث خطأ أثناء تحميل الأماكن");
+    }
+  }
+
   // ========================= COMMENTS =========================
 
   Future<void> fetchCommentsForSelectedService() async {
@@ -265,6 +284,7 @@ class ServiceController extends GetxController {
       isCommentsLoading.value = false;
     }
   }
+
   // In service_controller.dart, add this method to ServiceController class:
 
   /// Fetch all comments from all services (for society page)
