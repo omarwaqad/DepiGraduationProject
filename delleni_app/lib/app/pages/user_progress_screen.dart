@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:delleni_app/app/controllers/service_controller.dart';
 import 'package:delleni_app/app/models/service.dart';
+import 'package:delleni_app/app/pages/home_page.dart';
 
 class UserProgressScreen extends StatelessWidget {
   const UserProgressScreen({Key? key}) : super(key: key);
@@ -21,169 +22,251 @@ class ServicesTrackingPage extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     final isTablet = size.width > 600;
     final isDesktop = size.width > 1200;
-    
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: CustomScrollView(
-        slivers: [
-          // Header with gradient
-          SliverToBoxAdapter(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFF2E9B6F), Color(0xFF43B883)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+
+    return Directionality(
+      textDirection: TextDirection.rtl,
+
+      child: Scaffold(
+        backgroundColor: Colors.grey[50],
+        bottomNavigationBar: _buildBottomNav(context),
+        body: CustomScrollView(
+          slivers: [
+            // Header with gradient
+            SliverToBoxAdapter(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF2E9B6F), Color(0xFF43B883)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(30),
+                    bottomRight: Radius.circular(30),
+                  ),
                 ),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(30),
-                  bottomRight: Radius.circular(30),
+                padding: EdgeInsets.fromLTRB(
+                  isDesktop
+                      ? 60
+                      : isTablet
+                      ? 40
+                      : 20,
+                  isDesktop
+                      ? 80
+                      : isTablet
+                      ? 70
+                      : 60,
+                  isDesktop
+                      ? 60
+                      : isTablet
+                      ? 40
+                      : 20,
+                  isDesktop
+                      ? 60
+                      : isTablet
+                      ? 50
+                      : 40,
+                ),
+                child: Center(
+                  child: Container(
+                    constraints: BoxConstraints(
+                      maxWidth: isDesktop ? 1200 : double.infinity,
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          'تتبع طلباتك',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: isDesktop
+                                ? 36
+                                : isTablet
+                                ? 32
+                                : 28,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: isTablet ? 12 : 8),
+                        Text(
+                          'متابعة حالة جميع إجراءاتك الحكومية',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.9),
+                            fontSize: isDesktop
+                                ? 20
+                                : isTablet
+                                ? 18
+                                : 16,
+                          ),
+                        ),
+                        SizedBox(
+                          height: isDesktop
+                              ? 40
+                              : isTablet
+                              ? 35
+                              : 30,
+                        ),
+                        // Status Cards Row with responsive layout
+                        Obx(
+                          () => _buildStatusCards(
+                            controller,
+                            isTablet,
+                            isDesktop,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-              padding: EdgeInsets.fromLTRB(
-                isDesktop ? 60 : isTablet ? 40 : 20,
-                isDesktop ? 80 : isTablet ? 70 : 60,
-                isDesktop ? 60 : isTablet ? 40 : 20,
-                isDesktop ? 60 : isTablet ? 50 : 40,
-              ),
+            ),
+
+            // Title
+            SliverToBoxAdapter(
               child: Center(
                 child: Container(
-                  constraints: BoxConstraints(maxWidth: isDesktop ? 1200 : double.infinity),
-                  child: Column(
-                    children: [
-                      Text(
-                        'تتبع طلباتك',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: isDesktop ? 36 : isTablet ? 32 : 28,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: isTablet ? 12 : 8),
-                      Text(
-                        'متابعة حالة جميع إجراءاتك الحكومية',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.9),
-                          fontSize: isDesktop ? 20 : isTablet ? 18 : 16,
-                        ),
-                      ),
-                      SizedBox(height: isDesktop ? 40 : isTablet ? 35 : 30),
-                      // Status Cards Row with responsive layout
-                      Obx(() => _buildStatusCards(controller, isTablet, isDesktop)),
-                    ],
+                  constraints: BoxConstraints(
+                    maxWidth: isDesktop ? 1200 : double.infinity,
+                  ),
+                  padding: EdgeInsets.fromLTRB(
+                    isDesktop
+                        ? 60
+                        : isTablet
+                        ? 40
+                        : 20,
+                    isDesktop
+                        ? 40
+                        : isTablet
+                        ? 35
+                        : 30,
+                    isDesktop
+                        ? 60
+                        : isTablet
+                        ? 40
+                        : 20,
+                    isTablet ? 25 : 20,
+                  ),
+                  child: Text(
+                    'طلباتك الحالية',
+                    style: TextStyle(
+                      fontSize: isDesktop
+                          ? 28
+                          : isTablet
+                          ? 24
+                          : 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[800],
+                    ),
+                    textAlign: TextAlign.right,
                   ),
                 ),
               ),
             ),
-          ),
-          
-          // Title
-          SliverToBoxAdapter(
-            child: Center(
-              child: Container(
-                constraints: BoxConstraints(maxWidth: isDesktop ? 1200 : double.infinity),
-                padding: EdgeInsets.fromLTRB(
-                  isDesktop ? 60 : isTablet ? 40 : 20,
-                  isDesktop ? 40 : isTablet ? 35 : 30,
-                  isDesktop ? 60 : isTablet ? 40 : 20,
-                  isTablet ? 25 : 20,
-                ),
-                child: Text(
-                  'طلباتك الحالية',
-                  style: TextStyle(
-                    fontSize: isDesktop ? 28 : isTablet ? 24 : 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[800],
+
+            // Services List
+            Obx(() {
+              if (controller.isLoading.value) {
+                return SliverFillRemaining(
+                  child: Center(
+                    child: CircularProgressIndicator(color: Color(0xFF2E9B6F)),
                   ),
-                  textAlign: TextAlign.right,
-                ),
-              ),
-            ),
-          ),
-          
-          // Services List
-          Obx(() {
-            if (controller.isLoading.value) {
-              return SliverFillRemaining(
-                child: Center(
-                  child: CircularProgressIndicator(
-                    color: Color(0xFF2E9B6F),
-                  ),
-                ),
-              );
-            }
-            
-            // Filter services to only show those with progress
-            final userId = controller.supabase.auth.currentUser?.id;
-            final servicesWithProgress = controller.services.where((service) {
-              if (userId == null) return false;
-              final key = '${userId}_${service.id}';
-              final progress = controller.progressBox.get(key);
-              // Only show if progress exists and at least one step is completed
-              return progress != null && progress.stepsCompleted.any((step) => step);
-            }).toList();
-            
-            if (servicesWithProgress.isEmpty) {
-              return SliverFillRemaining(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.track_changes_outlined,
-                        size: isDesktop ? 100 : isTablet ? 80 : 64,
-                        color: Colors.grey[300],
-                      ),
-                      SizedBox(height: 16),
-                      Text(
-                        'لا توجد طلبات قيد المتابعة',
-                        style: TextStyle(
-                          fontSize: isDesktop ? 20 : isTablet ? 18 : 16,
-                          color: Colors.grey[600],
-                          fontWeight: FontWeight.w600,
+                );
+              }
+
+              // Filter services to only show those with progress
+              final userId = controller.supabase.auth.currentUser?.id;
+              final servicesWithProgress = controller.services.where((service) {
+                if (userId == null) return false;
+                final key = '${userId}_${service.id}';
+                final progress = controller.progressBox.get(key);
+                // Only show if progress exists and at least one step is completed
+                return progress != null &&
+                    progress.stepsCompleted.any((step) => step);
+              }).toList();
+
+              if (servicesWithProgress.isEmpty) {
+                return SliverFillRemaining(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.track_changes_outlined,
+                          size: isDesktop
+                              ? 100
+                              : isTablet
+                              ? 80
+                              : 64,
+                          color: Colors.grey[300],
                         ),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        'ابدأ بتقديم خدمة من الصفحة الرئيسية',
-                        style: TextStyle(
-                          fontSize: isDesktop ? 16 : isTablet ? 15 : 14,
-                          color: Colors.grey[500],
+                        SizedBox(height: 16),
+                        Text(
+                          'لا توجد طلبات قيد المتابعة',
+                          style: TextStyle(
+                            fontSize: isDesktop
+                                ? 20
+                                : isTablet
+                                ? 18
+                                : 16,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
-                    ],
+                        SizedBox(height: 8),
+                        Text(
+                          'ابدأ بتقديم خدمة من الصفحة الرئيسية',
+                          style: TextStyle(
+                            fontSize: isDesktop
+                                ? 16
+                                : isTablet
+                                ? 15
+                                : 14,
+                            color: Colors.grey[500],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
+                );
+              }
+
+              return SliverPadding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: isDesktop
+                      ? 60
+                      : isTablet
+                      ? 40
+                      : 20,
+                  vertical: 10,
                 ),
+                sliver: isDesktop
+                    ? _buildDesktopGrid(servicesWithProgress, controller)
+                    : _buildMobileList(
+                        servicesWithProgress,
+                        controller,
+                        isTablet,
+                      ),
               );
-            }
-            
-            return SliverPadding(
-              padding: EdgeInsets.symmetric(
-                horizontal: isDesktop ? 60 : isTablet ? 40 : 20,
-                vertical: 10,
-              ),
-              sliver: isDesktop
-                  ? _buildDesktopGrid(servicesWithProgress, controller)
-                  : _buildMobileList(servicesWithProgress, controller, isTablet),
-            );
-          }),
-          
-          // Bottom padding
-          SliverToBoxAdapter(
-            child: SizedBox(height: isTablet ? 40 : 20),
-          ),
-        ],
+            }),
+
+            // Bottom padding
+            SliverToBoxAdapter(child: SizedBox(height: isTablet ? 40 : 20)),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildStatusCards(ServiceController controller, bool isTablet, bool isDesktop) {
+  Widget _buildStatusCards(
+    ServiceController controller,
+    bool isTablet,
+    bool isDesktop,
+  ) {
     final userId = controller.supabase.auth.currentUser?.id;
-    
+
     int totalServices = 0;
     int completedServices = 0;
     int inProgressServices = 0;
-    
+
     if (userId != null) {
       for (var service in controller.services) {
         final key = '${userId}_${service.id}';
@@ -200,7 +283,7 @@ class ServicesTrackingPage extends StatelessWidget {
         }
       }
     }
-    
+
     return LayoutBuilder(
       builder: (context, constraints) {
         if (isDesktop) {
@@ -236,7 +319,7 @@ class ServicesTrackingPage extends StatelessWidget {
             ],
           );
         }
-        
+
         return Row(
           children: [
             Expanded(
@@ -277,11 +360,22 @@ class ServicesTrackingPage extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusCard(String number, String label, Color bg, Color textColor, bool isTablet, bool isDesktop) {
+  Widget _buildStatusCard(
+    String number,
+    String label,
+    Color bg,
+    Color textColor,
+    bool isTablet,
+    bool isDesktop,
+  ) {
     return Container(
       constraints: BoxConstraints(maxWidth: isDesktop ? 250 : double.infinity),
       padding: EdgeInsets.symmetric(
-        vertical: isDesktop ? 30 : isTablet ? 25 : 20,
+        vertical: isDesktop
+            ? 30
+            : isTablet
+            ? 25
+            : 20,
         horizontal: isDesktop ? 20 : 10,
       ),
       decoration: BoxDecoration(
@@ -300,7 +394,11 @@ class ServicesTrackingPage extends StatelessWidget {
           Text(
             number,
             style: TextStyle(
-              fontSize: isDesktop ? 42 : isTablet ? 36 : 32,
+              fontSize: isDesktop
+                  ? 42
+                  : isTablet
+                  ? 36
+                  : 32,
               fontWeight: FontWeight.bold,
               color: textColor,
             ),
@@ -309,7 +407,11 @@ class ServicesTrackingPage extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              fontSize: isDesktop ? 18 : isTablet ? 16 : 14,
+              fontSize: isDesktop
+                  ? 18
+                  : isTablet
+                  ? 16
+                  : 14,
               color: Colors.grey[700],
               fontWeight: FontWeight.w500,
             ),
@@ -319,7 +421,10 @@ class ServicesTrackingPage extends StatelessWidget {
     );
   }
 
-  Widget _buildDesktopGrid(List<Service> services, ServiceController controller) {
+  Widget _buildDesktopGrid(
+    List<Service> services,
+    ServiceController controller,
+  ) {
     return SliverGrid(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -327,33 +432,36 @@ class ServicesTrackingPage extends StatelessWidget {
         crossAxisSpacing: 20,
         mainAxisSpacing: 20,
       ),
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          final service = services[index];
-          return _buildServiceCard(service, controller, true, true);
-        },
-        childCount: services.length,
-      ),
+      delegate: SliverChildBuilderDelegate((context, index) {
+        final service = services[index];
+        return _buildServiceCard(service, controller, true, true);
+      }, childCount: services.length),
     );
   }
 
-  Widget _buildMobileList(List<Service> services, ServiceController controller, bool isTablet) {
+  Widget _buildMobileList(
+    List<Service> services,
+    ServiceController controller,
+    bool isTablet,
+  ) {
     return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          final service = services[index];
-          return _buildServiceCard(service, controller, isTablet, false);
-        },
-        childCount: services.length,
-      ),
+      delegate: SliverChildBuilderDelegate((context, index) {
+        final service = services[index];
+        return _buildServiceCard(service, controller, isTablet, false);
+      }, childCount: services.length),
     );
   }
 
-  Widget _buildServiceCard(Service service, ServiceController controller, bool isTablet, bool isDesktop) {
+  Widget _buildServiceCard(
+    Service service,
+    ServiceController controller,
+    bool isTablet,
+    bool isDesktop,
+  ) {
     // Calculate progress from Hive
     int completed = 0;
     int total = service.steps.length;
-    
+
     final userId = controller.supabase.auth.currentUser?.id;
     if (userId != null) {
       final key = '${userId}_${service.id}';
@@ -362,15 +470,21 @@ class ServicesTrackingPage extends StatelessWidget {
         completed = progress.stepsCompleted.where((s) => s).length;
       }
     }
-    
+
     double percentage = total > 0 ? (completed / total) : 0;
     bool isComplete = completed == total && total > 0;
-    
+
     return GestureDetector(
       onTap: () => controller.selectService(service),
       child: Container(
         margin: EdgeInsets.only(bottom: isTablet ? 20 : 16),
-        padding: EdgeInsets.all(isDesktop ? 24 : isTablet ? 22 : 20),
+        padding: EdgeInsets.all(
+          isDesktop
+              ? 24
+              : isTablet
+              ? 22
+              : 20,
+        ),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(isTablet ? 20 : 16),
@@ -390,9 +504,15 @@ class ServicesTrackingPage extends StatelessWidget {
               children: [
                 // Icon on left
                 Container(
-                  padding: EdgeInsets.all(isDesktop ? 14 : isTablet ? 13 : 12),
+                  padding: EdgeInsets.all(
+                    isDesktop
+                        ? 14
+                        : isTablet
+                        ? 13
+                        : 12,
+                  ),
                   decoration: BoxDecoration(
-                    color: isComplete 
+                    color: isComplete
                         ? Color(0xFF2E9B6F).withOpacity(0.1)
                         : Color(0xFFFF9800).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(isTablet ? 14 : 12),
@@ -400,7 +520,11 @@ class ServicesTrackingPage extends StatelessWidget {
                   child: Icon(
                     isComplete ? Icons.check_circle : Icons.description,
                     color: isComplete ? Color(0xFF2E9B6F) : Color(0xFFFF9800),
-                    size: isDesktop ? 32 : isTablet ? 30 : 28,
+                    size: isDesktop
+                        ? 32
+                        : isTablet
+                        ? 30
+                        : 28,
                   ),
                 ),
                 // Title and date on right
@@ -413,7 +537,11 @@ class ServicesTrackingPage extends StatelessWidget {
                         Text(
                           service.serviceName,
                           style: TextStyle(
-                            fontSize: isDesktop ? 20 : isTablet ? 19 : 18,
+                            fontSize: isDesktop
+                                ? 20
+                                : isTablet
+                                ? 19
+                                : 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.grey[800],
                           ),
@@ -428,7 +556,11 @@ class ServicesTrackingPage extends StatelessWidget {
                             Text(
                               _formatDate(service.createdAt ?? DateTime.now()),
                               style: TextStyle(
-                                fontSize: isDesktop ? 15 : isTablet ? 14 : 13,
+                                fontSize: isDesktop
+                                    ? 15
+                                    : isTablet
+                                    ? 14
+                                    : 13,
                                 color: Colors.grey[500],
                               ),
                             ),
@@ -446,9 +578,15 @@ class ServicesTrackingPage extends StatelessWidget {
                 ),
               ],
             ),
-            
-            SizedBox(height: isDesktop ? 24 : isTablet ? 22 : 20),
-            
+
+            SizedBox(
+              height: isDesktop
+                  ? 24
+                  : isTablet
+                  ? 22
+                  : 20,
+            ),
+
             // Progress section
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -456,7 +594,11 @@ class ServicesTrackingPage extends StatelessWidget {
                 Text(
                   '$completed من $total',
                   style: TextStyle(
-                    fontSize: isDesktop ? 16 : isTablet ? 15 : 14,
+                    fontSize: isDesktop
+                        ? 16
+                        : isTablet
+                        ? 15
+                        : 14,
                     color: Colors.grey[600],
                     fontWeight: FontWeight.w500,
                   ),
@@ -464,31 +606,39 @@ class ServicesTrackingPage extends StatelessWidget {
                 Text(
                   isComplete ? 'مكتمل' : 'قيد المراجعة',
                   style: TextStyle(
-                    fontSize: isDesktop ? 16 : isTablet ? 15 : 14,
+                    fontSize: isDesktop
+                        ? 16
+                        : isTablet
+                        ? 15
+                        : 14,
                     color: Colors.grey[700],
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
             ),
-            
+
             SizedBox(height: isTablet ? 14 : 12),
-            
+
             // Progress bar
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: LinearProgressIndicator(
                 value: percentage,
-                minHeight: isDesktop ? 10 : isTablet ? 9 : 8,
+                minHeight: isDesktop
+                    ? 10
+                    : isTablet
+                    ? 9
+                    : 8,
                 backgroundColor: Colors.grey[200],
                 valueColor: AlwaysStoppedAnimation<Color>(
                   isComplete ? Color(0xFF2E9B6F) : Color(0xFF2E9B6F),
                 ),
               ),
             ),
-            
+
             SizedBox(height: isTablet ? 14 : 12),
-            
+
             // Percentage badge
             Align(
               alignment: Alignment.centerLeft,
@@ -498,7 +648,7 @@ class ServicesTrackingPage extends StatelessWidget {
                   vertical: isTablet ? 7 : 6,
                 ),
                 decoration: BoxDecoration(
-                  color: isComplete 
+                  color: isComplete
                       ? Color(0xFF2E9B6F).withOpacity(0.1)
                       : Color(0xFFFFE5CC),
                   borderRadius: BorderRadius.circular(20),
@@ -506,7 +656,11 @@ class ServicesTrackingPage extends StatelessWidget {
                 child: Text(
                   '${(percentage * 100).toInt()}% مكتمل',
                   style: TextStyle(
-                    fontSize: isDesktop ? 14 : isTablet ? 13 : 12,
+                    fontSize: isDesktop
+                        ? 14
+                        : isTablet
+                        ? 13
+                        : 12,
                     fontWeight: FontWeight.bold,
                     color: isComplete ? Color(0xFF2E9B6F) : Color(0xFFFF9800),
                   ),
@@ -519,10 +673,66 @@ class ServicesTrackingPage extends StatelessWidget {
     );
   }
 
+  Widget _buildBottomNav(BuildContext context) {
+    return BottomNavigationBar(
+      currentIndex: 1, // طلباتي
+      type: BottomNavigationBarType.fixed,
+      selectedItemColor: const Color(0xFF219A6D),
+      unselectedItemColor: Colors.grey,
+      showUnselectedLabels: true,
+      items: const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home_outlined),
+          activeIcon: Icon(Icons.home_rounded),
+          label: 'الرئيسية',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.receipt_long_outlined),
+          activeIcon: Icon(Icons.receipt_long_rounded),
+          label: 'طلباتي',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.place_outlined),
+          activeIcon: Icon(Icons.place_rounded),
+          label: 'الأماكن',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.groups_outlined),
+          activeIcon: Icon(Icons.groups_rounded),
+          label: 'المجتمع',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person_outline_rounded),
+          activeIcon: Icon(Icons.person_rounded),
+          label: 'حسابي',
+        ),
+      ],
+      onTap: (index) {
+        if (index == 0) {
+          Get.offAll(() => HomePage());
+        } else if (index == 1) {
+          return;
+        } else {
+          // no action for now
+        }
+      },
+    );
+  }
+
   String _formatDate(DateTime date) {
     final months = [
-      'يناير', 'فبراير', 'مارس', 'إبريل', 'مايو', 'يونيو',
-      'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+      'يناير',
+      'فبراير',
+      'مارس',
+      'إبريل',
+      'مايو',
+      'يونيو',
+      'يوليو',
+      'أغسطس',
+      'سبتمبر',
+      'أكتوبر',
+      'نوفمبر',
+      'ديسمبر',
     ];
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }

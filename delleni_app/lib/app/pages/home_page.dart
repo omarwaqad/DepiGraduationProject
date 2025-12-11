@@ -5,6 +5,7 @@ import 'package:delleni_app/app/controllers/service_controller.dart';
 import 'package:delleni_app/app/pages/service_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:delleni_app/app/pages/user_progress_screen.dart';
 
 const Color kPrimaryGreen = Color(0xFF219A6D);
 const Color kSecondaryOrange = Color(0xFFDD755A);
@@ -77,7 +78,14 @@ class HomePage extends StatelessWidget {
         bottomNavigationBar: Obx(
           () => BottomNavigationBar(
             currentIndex: homeCtrl.currentIndex.value,
-            onTap: homeCtrl.onTabChanged,
+            onTap: (index) {
+              homeCtrl.onTabChanged(index); // update selected tab state
+
+              if (index == 1) {
+                // طلباتي
+                Get.to(() => const UserProgressScreen());
+              }
+            },
             type: BottomNavigationBarType.fixed,
             selectedItemColor: kPrimaryGreen,
             unselectedItemColor: Colors.grey,
@@ -111,6 +119,7 @@ class HomePage extends StatelessWidget {
             ],
           ),
         ),
+
         body: SafeArea(
           child: SingleChildScrollView(
             child: Column(

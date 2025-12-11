@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:delleni_app/app/pages/home_page.dart';
 
 part 'user_progress.g.dart';
 
@@ -36,8 +37,7 @@ class UserProgress extends HiveObject {
 
   // Helper to check if all steps are completed
   bool get isCompleted {
-    return stepsCompleted.isNotEmpty && 
-           stepsCompleted.every((step) => step);
+    return stepsCompleted.isNotEmpty && stepsCompleted.every((step) => step);
   }
 
   // Update status based on completion
