@@ -9,11 +9,17 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ee955dd5-b5b5-4658-90e4-d83f0a456dd9" name="Changes" comment="feat(location): enable permission request, current position fetch, and open Google Maps directions from LocationsSheet">
+    <list default="true" id="ee955dd5-b5b5-4658-90e4-d83f0a456dd9" name="Changes" comment=" fix(ui): resolve merge conflicts &amp; restore ServiceDetailPage and CommentsPage compile errors&#10; &#10; - remove duplicated class/constructor declarations&#10; - fix widget tree structure and missing braces&#10; - stabilize comments input/submit flow and stepper rendering">
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/home_content.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/main_layout.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/society_page.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/controllers/service_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/controllers/service_controller.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/comments_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/comments_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/home_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/home_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/login.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/login.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/service_detail_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/service_detail_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/user_progress_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/user_progress_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/main.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,6 +73,9 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 4
@@ -79,28 +88,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Flutter.Run App.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "io.flutter.reload.alreadyRun": "true",
-    "last_opened_file_path": "C:/Depi/DepiGraduationProject/delleni_app/lib/app/models/services",
-    "project.structure.last.edited": "Suggestions",
-    "project.structure.proportion": "0.17",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "dart.settings",
-    "show.migrate.to.gradle.popup": "false"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Flutter.Run App.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Depi/DepiGraduationProject/delleni_app/lib/app/models/services&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Suggestions&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.17&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;dart.settings&quot;,
+    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Depi\DepiGraduationProject\delleni_app\lib\app\models\services" />
@@ -221,7 +230,15 @@
       <option name="project" value="LOCAL" />
       <updated>1765460141169</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary=" fix(ui): resolve merge conflicts &amp; restore ServiceDetailPage and CommentsPage compile errors&#10; &#10; - remove duplicated class/constructor declarations&#10; - fix widget tree structure and missing braces&#10; - stabilize comments input/submit flow and stepper rendering">
+      <option name="closed" value="true" />
+      <created>1765466991670</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1765466991670</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -249,7 +266,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="feat(location): enable permission request, current position fetch, and open Google Maps directions from LocationsSheet" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat(location): enable permission request, current position fetch, and open Google Maps directions from LocationsSheet" />
+    <MESSAGE value=" fix(ui): resolve merge conflicts &amp; restore ServiceDetailPage and CommentsPage compile errors&#10; &#10; - remove duplicated class/constructor declarations&#10; - fix widget tree structure and missing braces&#10; - stabilize comments input/submit flow and stepper rendering" />
+    <option name="LAST_COMMIT_MESSAGE" value=" fix(ui): resolve merge conflicts &amp; restore ServiceDetailPage and CommentsPage compile errors&#10; &#10; - remove duplicated class/constructor declarations&#10; - fix widget tree structure and missing braces&#10; - stabilize comments input/submit flow and stepper rendering" />
   </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">

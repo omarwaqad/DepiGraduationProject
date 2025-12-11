@@ -1,0 +1,481 @@
+Index: delleni_app/lib/app/pages/home_page.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>// lib/app/pages/home_page.dart\r\n\r\nimport 'package:delleni_app/app/controllers/home_controller.dart';\r\nimport 'package:delleni_app/app/controllers/service_controller.dart';\r\nimport 'package:delleni_app/app/pages/service_detail_page.dart';\r\nimport 'package:flutter/material.dart';\r\nimport 'package:get/get.dart';\r\n\r\nconst Color kPrimaryGreen = Color(0xFF219A6D);\r\nconst Color kSecondaryOrange = Color(0xFFDD755A);\r\nconst Color kBackgroundGrey = Color(0xFFF5F5F5);\r\n\r\n// Optional UI config for known services (by Arabic name from DB)\r\nclass ServiceUIConfig {\r\n  final IconData icon;\r\n  final Color bgColor;\r\n\r\n  const ServiceUIConfig({required this.icon, required this.bgColor});\r\n}\r\n\r\n// Key = serviceName from Supabase (Arabic)\r\nconst Map<String, ServiceUIConfig> serviceUIMap = {\r\n  'قيد عائلي': ServiceUIConfig(\r\n    icon: Icons.family_restroom_rounded,\r\n    bgColor: Color(0xFFE7F8EF),\r\n  ),\r\n  'تقديم الجامعات': ServiceUIConfig(\r\n    icon: Icons.school_rounded,\r\n    bgColor: Color(0xFFFFF2EE),\r\n  ),\r\n  'طلب وظيفة حكومية': ServiceUIConfig(\r\n    icon: Icons.work_rounded,\r\n    bgColor: Color(0xFFE7F8EF),\r\n  ),\r\n  'استخراج الباسبور': ServiceUIConfig(\r\n    icon: Icons.flight_takeoff_rounded,\r\n    bgColor: Color(0xFFFFF2EE),\r\n  ),\r\n  'اشتراك المترو': ServiceUIConfig(\r\n    icon: Icons.directions_subway_filled_rounded,\r\n    bgColor: Color(0xFFE7F8EF),\r\n  ),\r\n  'التامين الصحى': ServiceUIConfig(\r\n    icon: Icons.medical_services_rounded,\r\n    bgColor: Color(0xFFFFF2EE),\r\n  ),\r\n  'استخراج بطاقة الرقم القومى': ServiceUIConfig(\r\n    icon: Icons.credit_card_rounded,\r\n    bgColor: Color(0xFFE7F8EF),\r\n  ),\r\n  'تجديد الباسبور': ServiceUIConfig(\r\n    icon: Icons.autorenew_rounded,\r\n    bgColor: Color(0xFFFFF2EE),\r\n  ),\r\n  'رخصة القيادة الشخصية': ServiceUIConfig(\r\n    icon: Icons.badge_rounded,\r\n    bgColor: Color(0xFFE7F8EF),\r\n  ),\r\n  'رخصة السيارة': ServiceUIConfig(\r\n    icon: Icons.directions_car_filled_rounded,\r\n    bgColor: Color(0xFFFFF2EE),\r\n  ),\r\n};\r\n\r\nclass HomePage extends StatelessWidget {\r\n  HomePage({Key? key}) : super(key: key);\r\n\r\n  final ServiceController serviceCtrl = Get.find<ServiceController>();\r\n  final HomeController homeCtrl = Get.put(HomeController(), permanent: true);\r\n\r\n  @override\r\n  Widget build(BuildContext context) {\r\n    return Directionality(\r\n      textDirection: TextDirection.rtl, // RTL forced\r\n      child: Scaffold(\r\n        backgroundColor: kBackgroundGrey,\r\n        bottomNavigationBar: Obx(\r\n          () => BottomNavigationBar(\r\n            currentIndex: homeCtrl.currentIndex.value,\r\n            onTap: homeCtrl.onTabChanged,\r\n            type: BottomNavigationBarType.fixed,\r\n            selectedItemColor: kPrimaryGreen,\r\n            unselectedItemColor: Colors.grey,\r\n            showUnselectedLabels: true,\r\n            items: const [\r\n              BottomNavigationBarItem(\r\n                icon: Icon(Icons.home_outlined),\r\n                activeIcon: Icon(Icons.home_rounded),\r\n                label: 'الرئيسية',\r\n              ),\r\n              BottomNavigationBarItem(\r\n                icon: Icon(Icons.receipt_long_outlined),\r\n                activeIcon: Icon(Icons.receipt_long_rounded),\r\n                label: 'طلباتي',\r\n              ),\r\n              BottomNavigationBarItem(\r\n                icon: Icon(Icons.place_outlined),\r\n                activeIcon: Icon(Icons.place_rounded),\r\n                label: 'الأماكن',\r\n              ),\r\n              BottomNavigationBarItem(\r\n                icon: Icon(Icons.groups_outlined),\r\n                activeIcon: Icon(Icons.groups_rounded),\r\n                label: 'المجتمع',\r\n              ),\r\n              BottomNavigationBarItem(\r\n                icon: Icon(Icons.person_outline_rounded),\r\n                activeIcon: Icon(Icons.person_rounded),\r\n                label: 'حسابي',\r\n              ),\r\n            ],\r\n          ),\r\n        ),\r\n        body: SafeArea(\r\n          child: SingleChildScrollView(\r\n            child: Column(\r\n              children: [\r\n                _buildHeader(context),\r\n                const SizedBox(height: 12),\r\n                _buildVisionBanner(),\r\n                const SizedBox(height: 16),\r\n                _buildServicesTitle(),\r\n                const SizedBox(height: 8),\r\n                _buildServicesSection(),\r\n                const SizedBox(height: 24),\r\n              ],\r\n            ),\r\n          ),\r\n        ),\r\n      ),\r\n    );\r\n  }\r\n\r\n  // ================= HEADER =================\r\n  Widget _buildHeader(BuildContext context) {\r\n    return Container(\r\n      width: double.infinity,\r\n      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),\r\n      decoration: const BoxDecoration(\r\n        color: kPrimaryGreen,\r\n        borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),\r\n      ),\r\n      child: Column(\r\n        crossAxisAlignment: CrossAxisAlignment.start,\r\n        children: [\r\n          Text(\r\n            'مرحباً \uD83D\uDC4B',\r\n            style: Theme.of(context).textTheme.titleLarge?.copyWith(\r\n              color: Colors.white,\r\n              fontWeight: FontWeight.w700,\r\n              fontSize: 24,\r\n            ),\r\n          ),\r\n          const SizedBox(height: 4),\r\n          Text(\r\n            'كيف يمكننا مساعدتك اليوم؟',\r\n            style: Theme.of(context).textTheme.bodyMedium?.copyWith(\r\n              color: Colors.white.withOpacity(0.9),\r\n              fontSize: 14,\r\n            ),\r\n          ),\r\n          const SizedBox(height: 16),\r\n          Container(\r\n            height: 44,\r\n            decoration: BoxDecoration(\r\n              color: Colors.white,\r\n              borderRadius: BorderRadius.circular(24),\r\n              boxShadow: [\r\n                BoxShadow(\r\n                  color: Colors.black.withOpacity(0.05),\r\n                  blurRadius: 6,\r\n                  offset: const Offset(0, 3),\r\n                ),\r\n              ],\r\n            ),\r\n            padding: const EdgeInsets.symmetric(horizontal: 16),\r\n            child: const Row(\r\n              children: [\r\n                Icon(Icons.search_rounded, color: Colors.grey, size: 22),\r\n                SizedBox(width: 8),\r\n                Expanded(\r\n                  child: TextField(\r\n                    decoration: InputDecoration(\r\n                      isCollapsed: true,\r\n                      border: InputBorder.none,\r\n                      hintText: 'ابحث عن خدمة...',\r\n                    ),\r\n                    style: TextStyle(fontSize: 14),\r\n                    cursorColor: kPrimaryGreen,\r\n                  ),\r\n                ),\r\n              ],\r\n            ),\r\n          ),\r\n        ],\r\n      ),\r\n    );\r\n  }\r\n\r\n  // ================= VISION BANNER =================\r\n  Widget _buildVisionBanner() {\r\n    return Padding(\r\n      padding: const EdgeInsets.symmetric(horizontal: 16),\r\n      child: Container(\r\n        width: double.infinity,\r\n        padding: const EdgeInsets.all(16),\r\n        decoration: BoxDecoration(\r\n          color: kSecondaryOrange,\r\n          borderRadius: BorderRadius.circular(16),\r\n        ),\r\n        child: Row(\r\n          crossAxisAlignment: CrossAxisAlignment.start,\r\n          children: [\r\n            const Expanded(\r\n              child: Column(\r\n                crossAxisAlignment: CrossAxisAlignment.start,\r\n                children: [\r\n                  Text(\r\n                    'رؤيتنا \uD83D\uDE80',\r\n                    style: TextStyle(\r\n                      color: Colors.white,\r\n                      fontWeight: FontWeight.w700,\r\n                      fontSize: 16,\r\n                    ),\r\n                  ),\r\n                  SizedBox(height: 4),\r\n                  Text(\r\n                    'نحو تحول رقمي كامل - إنترنت سريع وغير محدود لدعم الابتكار والمستقبلين ونمو الوطن',\r\n                    style: TextStyle(\r\n                      color: Colors.white,\r\n                      fontSize: 12,\r\n                      height: 1.4,\r\n                    ),\r\n                  ),\r\n                ],\r\n              ),\r\n            ),\r\n            const SizedBox(width: 8),\r\n            Container(\r\n              width: 32,\r\n              height: 32,\r\n              decoration: BoxDecoration(\r\n                color: Colors.white.withOpacity(0.18),\r\n                shape: BoxShape.circle,\r\n              ),\r\n              child: const Icon(\r\n                Icons.rocket_launch_rounded,\r\n                color: Colors.white,\r\n                size: 20,\r\n              ),\r\n            ),\r\n          ],\r\n        ),\r\n      ),\r\n    );\r\n  }\r\n\r\n  // ================= SERVICES TITLE =================\r\n  Widget _buildServicesTitle() {\r\n    return const Padding(\r\n      padding: EdgeInsets.symmetric(horizontal: 16.0),\r\n      child: Align(\r\n        alignment: Alignment.centerRight,\r\n        child: Text(\r\n          'الخدمات المتاحة',\r\n          style: TextStyle(\r\n            fontSize: 16,\r\n            fontWeight: FontWeight.w700,\r\n            color: Colors.black87,\r\n          ),\r\n        ),\r\n      ),\r\n    );\r\n  }\r\n\r\n  // ================= SERVICES SECTION =================\r\n  Widget _buildServicesSection() {\r\n    return Obx(() {\r\n      if (serviceCtrl.isLoading.value) {\r\n        return const Padding(\r\n          padding: EdgeInsets.only(top: 40),\r\n          child: Center(child: CircularProgressIndicator()),\r\n        );\r\n      }\r\n\r\n      if (serviceCtrl.services.isEmpty) {\r\n        return const Padding(\r\n          padding: EdgeInsets.only(top: 40),\r\n          child: Center(\r\n            child: Text(\r\n              'لا توجد خدمات متاحة حالياً.',\r\n              style: TextStyle(fontSize: 14),\r\n            ),\r\n          ),\r\n        );\r\n      }\r\n\r\n      return _buildServicesGrid();\r\n    });\r\n  }\r\n\r\n  // ================= SERVICES GRID =================\r\n  Widget _buildServicesGrid() {\r\n    return Padding(\r\n      padding: const EdgeInsets.symmetric(horizontal: 12),\r\n      child: GridView.builder(\r\n        shrinkWrap: true,\r\n        physics: const NeverScrollableScrollPhysics(),\r\n        itemCount: serviceCtrl.services.length, // from Supabase\r\n        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(\r\n          crossAxisCount: 2,\r\n          mainAxisSpacing: 12,\r\n          crossAxisSpacing: 12,\r\n          childAspectRatio: 1.25,\r\n        ),\r\n        itemBuilder: (context, index) {\r\n          final s = serviceCtrl.services[index];\r\n\r\n          // Optional custom icon/color based on Arabic name\r\n          final ui = serviceUIMap[s.serviceName];\r\n\r\n          final icon = ui?.icon ?? Icons.widgets_rounded;\r\n          final bgColor = ui?.bgColor ?? const Color(0xFFE7F8EF);\r\n\r\n          return ServiceCard(\r\n            title: s.serviceName,\r\n            icon: icon,\r\n            iconBgColor: bgColor,\r\n            onTap: () async {\r\n              serviceCtrl.selectService(s);\r\n              Get.to(() => ServiceDetailPage());\r\n            },\r\n          );\r\n        },\r\n      ),\r\n    );\r\n  }\r\n}\r\n\r\n// ================= REUSABLE SERVICE CARD =================\r\n\r\nclass ServiceCard extends StatelessWidget {\r\n  final String title;\r\n  final IconData icon;\r\n  final Color iconBgColor;\r\n  final VoidCallback? onTap;\r\n\r\n  const ServiceCard({\r\n    Key? key,\r\n    required this.title,\r\n    required this.icon,\r\n    required this.iconBgColor,\r\n    this.onTap,\r\n  }) : super(key: key);\r\n\r\n  @override\r\n  Widget build(BuildContext context) {\r\n    return Material(\r\n      elevation: 1.5,\r\n      color: Colors.white,\r\n      borderRadius: BorderRadius.circular(18),\r\n      shadowColor: Colors.black.withOpacity(0.04),\r\n      child: InkWell(\r\n        borderRadius: BorderRadius.circular(18),\r\n        onTap: onTap,\r\n        child: Padding(\r\n          padding: const EdgeInsets.all(14.0),\r\n          child: Column(\r\n            mainAxisAlignment: MainAxisAlignment.center,\r\n            children: [\r\n              Container(\r\n                width: 44,\r\n                height: 44,\r\n                decoration: BoxDecoration(\r\n                  color: iconBgColor,\r\n                  shape: BoxShape.circle,\r\n                ),\r\n                child: Icon(icon, color: kPrimaryGreen, size: 24),\r\n              ),\r\n              const SizedBox(height: 12),\r\n              Text(\r\n                title,\r\n                textAlign: TextAlign.center,\r\n                style: const TextStyle(\r\n                  fontSize: 13,\r\n                  fontWeight: FontWeight.w600,\r\n                  color: Colors.black87,\r\n                  height: 1.3,\r\n                ),\r\n              ),\r\n            ],\r\n          ),\r\n        ),\r\n      ),\r\n    );\r\n  }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/delleni_app/lib/app/pages/home_page.dart b/delleni_app/lib/app/pages/home_page.dart
+--- a/delleni_app/lib/app/pages/home_page.dart	(revision 3555a542112d4c95ae704f057a0cda88585b3deb)
++++ b/delleni_app/lib/app/pages/home_page.dart	(date 1765471778799)
+@@ -6,6 +6,8 @@
+ import 'package:flutter/material.dart';
+ import 'package:get/get.dart';
+ 
++import 'package:delleni_app/app/pages/society_page.dart';
++
+ const Color kPrimaryGreen = Color(0xFF219A6D);
+ const Color kSecondaryOrange = Color(0xFFDD755A);
+ const Color kBackgroundGrey = Color(0xFFF5F5F5);
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AndroidLayouts\">\r\n    <shared>\r\n      <config />\r\n    </shared>\r\n  </component>\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"NONE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"ee955dd5-b5b5-4658-90e4-d83f0a456dd9\" name=\"Changes\" comment=\"feat(location): enable permission request, current position fetch, and open Google Maps directions from LocationsSheet\">\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/delleni_app/lib/app/controllers/service_controller.dart\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/delleni_app/lib/app/controllers/service_controller.dart\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/delleni_app/lib/app/pages/comments_page.dart\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/delleni_app/lib/app/pages/comments_page.dart\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/delleni_app/lib/app/pages/service_detail_page.dart\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/delleni_app/lib/app/pages/service_detail_page.dart\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"ClangdSettings\">\r\n    <option name=\"formatViaClangd\" value=\"false\" />\r\n  </component>\r\n  <component name=\"ExecutionTargetManager\" SELECTED_TARGET=\"device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=C:\\Users\\Omar Waqqad\\.android\\avd\\Medium_Phone.avd)]\" />\r\n  <component name=\"ExternalProjectsData\">\r\n    <projectState path=\"$PROJECT_DIR$/delleni_app/android\">\r\n      <ProjectState />\r\n    </projectState>\r\n  </component>\r\n  <component name=\"ExternalProjectsManager\">\r\n    <system id=\"GRADLE\">\r\n      <state>\r\n        <projects_view>\r\n          <tree_state>\r\n            <expand />\r\n            <select />\r\n          </tree_state>\r\n        </projects_view>\r\n      </state>\r\n    </system>\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Dart File\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n    <option name=\"ROOT_SYNC\" value=\"DONT_SYNC\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;omarwaqad&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">{\r\n  &quot;selectedUrlAndAccountId&quot;: {\r\n    &quot;url&quot;: &quot;https://github.com/omarwaqad/DepiGraduationProject.git&quot;,\r\n    &quot;accountId&quot;: &quot;b788ce52-e511-40a5-b776-e7f9f058af0a&quot;\r\n  }\r\n}</component>\r\n  <component name=\"MarkdownSettingsMigration\">\r\n    <option name=\"stateVersion\" value=\"1\" />\r\n  </component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;customColor&quot;: &quot;&quot;,\r\n  &quot;associatedIndex&quot;: 4\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"36NkWczyGF6YHpcy3FOQ3MLKLh9\" />\r\n  <component name=\"ProjectLevelVcsManager\">\r\n    <ConfirmationsSetting value=\"2\" id=\"Add\" />\r\n  </component>\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\"><![CDATA[{\r\n  \"keyToString\": {\r\n    \"Flutter.Run App.executor\": \"Run\",\r\n    \"RunOnceActivity.OpenProjectViewOnStart\": \"true\",\r\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\r\n    \"RunOnceActivity.cidr.known.project.marker\": \"true\",\r\n    \"RunOnceActivity.git.unshallow\": \"true\",\r\n    \"RunOnceActivity.readMode.enableVisualFormatting\": \"true\",\r\n    \"cf.first.check.clang-format\": \"false\",\r\n    \"cidr.known.project.marker\": \"true\",\r\n    \"dart.analysis.tool.window.visible\": \"false\",\r\n    \"git-widget-placeholder\": \"main\",\r\n    \"ignore.virus.scanning.warn.message\": \"true\",\r\n    \"io.flutter.reload.alreadyRun\": \"true\",\r\n    \"last_opened_file_path\": \"C:/Depi/DepiGraduationProject/delleni_app/lib/app/models/services\",\r\n    \"project.structure.last.edited\": \"Suggestions\",\r\n    \"project.structure.proportion\": \"0.17\",\r\n    \"project.structure.side.proportion\": \"0.2\",\r\n    \"settings.editor.selected.configurable\": \"dart.settings\",\r\n    \"show.migrate.to.gradle.popup\": \"false\"\r\n  }\r\n}]]></component>\r\n  <component name=\"RecentsManager\">\r\n    <key name=\"CopyFile.RECENT_KEYS\">\r\n      <recent name=\"C:\\Depi\\DepiGraduationProject\\delleni_app\\lib\\app\\models\\services\" />\r\n    </key>\r\n  </component>\r\n  <component name=\"RunManager\" selected=\"Flutter.Run App\">\r\n    <configuration name=\"android.app\" type=\"AndroidRunConfigurationType\" factoryName=\"Android App\" activateToolWindowBeforeRun=\"false\">\r\n      <module name=\"android.app\" />\r\n      <option name=\"ANDROID_RUN_CONFIGURATION_SCHEMA_VERSION\" value=\"1\" />\r\n      <option name=\"DEPLOY\" value=\"true\" />\r\n      <option name=\"DEPLOY_APK_FROM_BUNDLE\" value=\"false\" />\r\n      <option name=\"DEPLOY_AS_INSTANT\" value=\"false\" />\r\n      <option name=\"ARTIFACT_NAME\" value=\"\" />\r\n      <option name=\"PM_INSTALL_OPTIONS\" value=\"\" />\r\n      <option name=\"ALL_USERS\" value=\"false\" />\r\n      <option name=\"ALWAYS_INSTALL_WITH_PM\" value=\"false\" />\r\n      <option name=\"ALLOW_ASSUME_VERIFIED\" value=\"false\" />\r\n      <option name=\"CLEAR_APP_STORAGE\" value=\"false\" />\r\n      <option name=\"DYNAMIC_FEATURES_DISABLED_LIST\" value=\"\" />\r\n      <option name=\"ACTIVITY_EXTRA_FLAGS\" value=\"\" />\r\n      <option name=\"MODE\" value=\"default_activity\" />\r\n      <option name=\"RESTORE_ENABLED\" value=\"false\" />\r\n      <option name=\"RESTORE_FILE\" value=\"\" />\r\n      <option name=\"RESTORE_FRESH_INSTALL_ONLY\" value=\"false\" />\r\n      <option name=\"CLEAR_LOGCAT\" value=\"false\" />\r\n      <option name=\"SHOW_LOGCAT_AUTOMATICALLY\" value=\"false\" />\r\n      <option name=\"TARGET_SELECTION_MODE\" value=\"DEVICE_AND_SNAPSHOT_COMBO_BOX\" />\r\n      <option name=\"SELECTED_CLOUD_MATRIX_CONFIGURATION_ID\" value=\"-1\" />\r\n      <option name=\"SELECTED_CLOUD_MATRIX_PROJECT_ID\" value=\"\" />\r\n      <option name=\"DEBUGGER_TYPE\" value=\"Auto\" />\r\n      <Auto>\r\n        <option name=\"USE_JAVA_AWARE_DEBUGGER\" value=\"false\" />\r\n        <option name=\"SHOW_STATIC_VARS\" value=\"true\" />\r\n        <option name=\"WORKING_DIR\" value=\"\" />\r\n        <option name=\"TARGET_LOGGING_CHANNELS\" value=\"lldb process:gdb-remote packets\" />\r\n        <option name=\"SHOW_OPTIMIZED_WARNING\" value=\"true\" />\r\n        <option name=\"ATTACH_ON_WAIT_FOR_DEBUGGER\" value=\"false\" />\r\n        <option name=\"DEBUG_SANDBOX_SDK\" value=\"false\" />\r\n      </Auto>\r\n      <Hybrid>\r\n        <option name=\"USE_JAVA_AWARE_DEBUGGER\" value=\"false\" />\r\n        <option name=\"SHOW_STATIC_VARS\" value=\"true\" />\r\n        <option name=\"WORKING_DIR\" value=\"\" />\r\n        <option name=\"TARGET_LOGGING_CHANNELS\" value=\"lldb process:gdb-remote packets\" />\r\n        <option name=\"SHOW_OPTIMIZED_WARNING\" value=\"true\" />\r\n        <option name=\"ATTACH_ON_WAIT_FOR_DEBUGGER\" value=\"false\" />\r\n        <option name=\"DEBUG_SANDBOX_SDK\" value=\"false\" />\r\n      </Hybrid>\r\n      <Java>\r\n        <option name=\"ATTACH_ON_WAIT_FOR_DEBUGGER\" value=\"false\" />\r\n        <option name=\"DEBUG_SANDBOX_SDK\" value=\"false\" />\r\n      </Java>\r\n      <Native>\r\n        <option name=\"USE_JAVA_AWARE_DEBUGGER\" value=\"false\" />\r\n        <option name=\"SHOW_STATIC_VARS\" value=\"true\" />\r\n        <option name=\"WORKING_DIR\" value=\"\" />\r\n        <option name=\"TARGET_LOGGING_CHANNELS\" value=\"lldb process:gdb-remote packets\" />\r\n        <option name=\"SHOW_OPTIMIZED_WARNING\" value=\"true\" />\r\n        <option name=\"ATTACH_ON_WAIT_FOR_DEBUGGER\" value=\"false\" />\r\n        <option name=\"DEBUG_SANDBOX_SDK\" value=\"false\" />\r\n      </Native>\r\n      <Profilers>\r\n        <option name=\"ADVANCED_PROFILING_ENABLED\" value=\"false\" />\r\n        <option name=\"STARTUP_PROFILING_ENABLED\" value=\"false\" />\r\n        <option name=\"STARTUP_CPU_PROFILING_ENABLED\" value=\"false\" />\r\n        <option name=\"STARTUP_CPU_PROFILING_CONFIGURATION_NAME\" value=\"Java/Kotlin Method Sample (legacy)\" />\r\n        <option name=\"STARTUP_NATIVE_MEMORY_PROFILING_ENABLED\" value=\"false\" />\r\n        <option name=\"NATIVE_MEMORY_SAMPLE_RATE_BYTES\" value=\"2048\" />\r\n      </Profilers>\r\n      <option name=\"DEEP_LINK\" value=\"\" />\r\n      <option name=\"ACTIVITY\" value=\"\" />\r\n      <option name=\"ACTIVITY_CLASS\" value=\"\" />\r\n      <option name=\"SEARCH_ACTIVITY_IN_GLOBAL_SCOPE\" value=\"false\" />\r\n      <option name=\"SKIP_ACTIVITY_VALIDATION\" value=\"false\" />\r\n      <method v=\"2\">\r\n        <option name=\"Android.Gradle.BeforeRunTask\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n    <configuration name=\"Run App\" type=\"FlutterRunConfigurationType\" factoryName=\"Flutter\">\r\n      <option name=\"filePath\" value=\"$PROJECT_DIR$/delleni_app/lib/main.dart\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <list>\r\n      <item itemvalue=\"Android App.android.app\" />\r\n      <item itemvalue=\"Flutter.Run App\" />\r\n    </list>\r\n  </component>\r\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"ee955dd5-b5b5-4658-90e4-d83f0a456dd9\" name=\"Changes\" comment=\"\" />\r\n      <created>1764854449971</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1764854449971</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"feat(location): enable permission request, current position fetch, and open Google Maps directions from LocationsSheet\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1765339602035</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1765339602035</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"feat(location): enable permission request, current position fetch, and open Google Maps directions from LocationsSheet\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1765459853061</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1765459853061</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"feat(location): enable permission request, current position fetch, and open Google Maps directions from LocationsSheet\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1765460141169</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1765460141169</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"4\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State>\r\n              <option name=\"FILTERS\">\r\n                <map>\r\n                  <entry key=\"branch\">\r\n                    <value>\r\n                      <list>\r\n                        <option value=\"waqqad\" />\r\n                      </list>\r\n                    </value>\r\n                  </entry>\r\n                </map>\r\n              </option>\r\n            </State>\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"feat(location): enable permission request, current position fetch, and open Google Maps directions from LocationsSheet\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"feat(location): enable permission request, current position fetch, and open Google Maps directions from LocationsSheet\" />\r\n  </component>\r\n  <component name=\"play_dynamic_filters_status\">\r\n    <option name=\"appIdToCheckInfo\">\r\n      <map>\r\n        <entry key=\"com.example.delleni_app\">\r\n          <value>\r\n            <CheckInfo lastCheckTimestamp=\"1765335643786\" />\r\n          </value>\r\n        </entry>\r\n        <entry key=\"com.example.delleni_app.test\">\r\n          <value>\r\n            <CheckInfo lastCheckTimestamp=\"1765335643786\" />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 3555a542112d4c95ae704f057a0cda88585b3deb)
++++ b/.idea/workspace.xml	(date 1765471779310)
+@@ -9,11 +9,10 @@
+     <option name="autoReloadType" value="NONE" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="ee955dd5-b5b5-4658-90e4-d83f0a456dd9" name="Changes" comment="feat(location): enable permission request, current position fetch, and open Google Maps directions from LocationsSheet">
++    <list default="true" id="ee955dd5-b5b5-4658-90e4-d83f0a456dd9" name="Changes" comment=" fix(ui): resolve merge conflicts &amp; restore ServiceDetailPage and CommentsPage compile errors&#10; &#10; - remove duplicated class/constructor declarations&#10; - fix widget tree structure and missing braces&#10; - stabilize comments input/submit flow and stepper rendering">
++      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/society_page.dart" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/controllers/service_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/controllers/service_controller.dart" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/comments_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/comments_page.dart" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/service_detail_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/service_detail_page.dart" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/home_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/home_page.dart" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -221,7 +220,15 @@
+       <option name="project" value="LOCAL" />
+       <updated>1765460141169</updated>
+     </task>
+-    <option name="localTasksCounter" value="4" />
++    <task id="LOCAL-00004" summary=" fix(ui): resolve merge conflicts &amp; restore ServiceDetailPage and CommentsPage compile errors&#10; &#10; - remove duplicated class/constructor declarations&#10; - fix widget tree structure and missing braces&#10; - stabilize comments input/submit flow and stepper rendering">
++      <option name="closed" value="true" />
++      <created>1765466991670</created>
++      <option name="number" value="00004" />
++      <option name="presentableId" value="LOCAL-00004" />
++      <option name="project" value="LOCAL" />
++      <updated>1765466991670</updated>
++    </task>
++    <option name="localTasksCounter" value="5" />
+     <servers />
+   </component>
+   <component name="Vcs.Log.Tabs.Properties">
+@@ -249,7 +256,8 @@
+   </component>
+   <component name="VcsManagerConfiguration">
+     <MESSAGE value="feat(location): enable permission request, current position fetch, and open Google Maps directions from LocationsSheet" />
+-    <option name="LAST_COMMIT_MESSAGE" value="feat(location): enable permission request, current position fetch, and open Google Maps directions from LocationsSheet" />
++    <MESSAGE value=" fix(ui): resolve merge conflicts &amp; restore ServiceDetailPage and CommentsPage compile errors&#10; &#10; - remove duplicated class/constructor declarations&#10; - fix widget tree structure and missing braces&#10; - stabilize comments input/submit flow and stepper rendering" />
++    <option name="LAST_COMMIT_MESSAGE" value=" fix(ui): resolve merge conflicts &amp; restore ServiceDetailPage and CommentsPage compile errors&#10; &#10; - remove duplicated class/constructor declarations&#10; - fix widget tree structure and missing braces&#10; - stabilize comments input/submit flow and stepper rendering" />
+   </component>
+   <component name="play_dynamic_filters_status">
+     <option name="appIdToCheckInfo">
+Index: delleni_app/lib/app/pages/society_page.dart
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/delleni_app/lib/app/pages/society_page.dart b/delleni_app/lib/app/pages/society_page.dart
+new file mode 100644
+--- /dev/null	(date 1765469905677)
++++ b/delleni_app/lib/app/pages/society_page.dart	(date 1765469905677)
+@@ -0,0 +1,400 @@
++// lib/app/pages/society_page.dart
++import 'package:flutter/material.dart';
++import 'package:get/get.dart';
++import 'package:delleni_app/app/controllers/service_controller.dart';
++import 'package:delleni_app/app/models/comments.dart';
++
++const Color kPrimaryGreen = Color(0xFF219A6D);
++const Color kBackgroundGrey = Color(0xFFF5F5F5);
++
++class SocietyPage extends StatelessWidget {
++  const SocietyPage({Key? key}) : super(key: key);
++
++  @override
++  Widget build(BuildContext context) {
++    final ServiceController ctrl = Get.find<ServiceController>();
++
++    return Directionality(
++      textDirection: TextDirection.rtl,
++      child: Scaffold(
++        backgroundColor: kBackgroundGrey,
++        body: SafeArea(
++          child: Column(
++            children: [
++              _HeaderArea(),
++              const SizedBox(height: 12),
++              Expanded(
++                child: Obx(() {
++                  final comments = ctrl.comments;
++                  final totalTips = comments.length;
++                  final totalLikes = comments.fold<int>(
++                    0,
++                    (p, c) => p + (c.likes ?? 0),
++                  );
++                  final contributors = _topContributors(comments, limit: 5);
++
++                  return SingleChildScrollView(
++                    padding: const EdgeInsets.symmetric(horizontal: 12),
++                    child: Column(
++                      crossAxisAlignment: CrossAxisAlignment.start,
++                      children: [
++                        _StatsCard(
++                          totalContributors: contributors.length,
++                          totalTips: totalTips,
++                          totalLikes: totalLikes,
++                        ),
++                        const SizedBox(height: 14),
++
++                        // Most active contributors
++                        const Text(
++                          'أكثر المساهمين نشاطًا',
++                          style: TextStyle(
++                            fontSize: 14,
++                            fontWeight: FontWeight.w700,
++                          ),
++                        ),
++                        const SizedBox(height: 8),
++                        if (contributors.isEmpty)
++                          Container(
++                            padding: const EdgeInsets.all(12),
++                            decoration: BoxDecoration(
++                              color: Colors.white,
++                              borderRadius: BorderRadius.circular(12),
++                            ),
++                            child: const Text('لا يوجد مساهمين بعد'),
++                          )
++                        else
++                          SizedBox(
++                            height: 60,
++                            child: ListView.separated(
++                              scrollDirection: Axis.horizontal,
++                              itemCount: contributors.length,
++                              separatorBuilder: (_, __) =>
++                                  const SizedBox(width: 8),
++                              itemBuilder: (context, i) {
++                                final item = contributors[i];
++                                return _ContributorChip(
++                                  name: item.key,
++                                  count: item.value,
++                                );
++                              },
++                            ),
++                          ),
++
++                        const SizedBox(height: 18),
++
++                        // Tips feed (synced with ctrl.comments)
++                        const Text(
++                          'نصائح وتجارب المستخدمين',
++                          style: TextStyle(
++                            fontSize: 16,
++                            fontWeight: FontWeight.w700,
++                          ),
++                        ),
++                        const SizedBox(height: 8),
++
++                        ...comments.map(
++                          (c) => Padding(
++                            padding: const EdgeInsets.only(bottom: 10),
++                            child: _SocietyTipCard(
++                              comment: c,
++                              onLike: () => ctrl.likeComment(c),
++                            ),
++                          ),
++                        ),
++
++                        const SizedBox(height: 80),
++                      ],
++                    ),
++                  );
++                }),
++              ),
++            ],
++          ),
++        ),
++      ),
++    );
++  }
++
++  static List<MapEntry<String, int>> _topContributors(
++    List<CommentModel> comments, {
++    int limit = 5,
++  }) {
++    final Map<String, int> counts = {};
++    for (final c in comments) {
++      final name = (c.username ?? 'غير معروف');
++      counts[name] = (counts[name] ?? 0) + 1;
++    }
++    final entries = counts.entries.toList()
++      ..sort((a, b) => b.value.compareTo(a.value));
++    return entries.take(limit).toList();
++  }
++}
++
++// ---------------- UI pieces ----------------
++
++class _HeaderArea extends StatelessWidget {
++  @override
++  Widget build(BuildContext context) {
++    return Container(
++      width: double.infinity,
++      padding: const EdgeInsets.fromLTRB(16, 18, 16, 18),
++      decoration: const BoxDecoration(
++        gradient: LinearGradient(
++          colors: [kPrimaryGreen, Color(0xFF1C815B)],
++          begin: Alignment.topRight,
++          end: Alignment.bottomLeft,
++        ),
++        borderRadius: BorderRadius.vertical(bottom: Radius.circular(22)),
++      ),
++      child: Column(
++        crossAxisAlignment: CrossAxisAlignment.start,
++        children: const [
++          Text(
++            'مجتمع دلني',
++            style: TextStyle(
++              color: Colors.white,
++              fontSize: 20,
++              fontWeight: FontWeight.w800,
++            ),
++          ),
++          SizedBox(height: 6),
++          Text(
++            'شارك تجربتك واستفد من تجارب الآخرين',
++            style: TextStyle(color: Colors.white70, fontSize: 13),
++          ),
++        ],
++      ),
++    );
++  }
++}
++
++class _StatsCard extends StatelessWidget {
++  final int totalContributors;
++  final int totalTips;
++  final int totalLikes;
++
++  const _StatsCard({
++    Key? key,
++    required this.totalContributors,
++    required this.totalTips,
++    required this.totalLikes,
++  }) : super(key: key);
++
++  @override
++  Widget build(BuildContext context) {
++    return Container(
++      margin: const EdgeInsets.symmetric(vertical: 6),
++      padding: const EdgeInsets.all(14),
++      decoration: BoxDecoration(
++        color: Colors.white,
++        borderRadius: BorderRadius.circular(14),
++      ),
++      child: Row(
++        mainAxisAlignment: MainAxisAlignment.spaceAround,
++        children: [
++          _StatItem(count: totalContributors.toString(), label: 'مساهمين'),
++          _StatItem(count: totalTips.toString(), label: 'تعليقات'),
++          _StatItem(count: totalLikes.toString(), label: 'إعجابات'),
++        ],
++      ),
++    );
++  }
++}
++
++class _StatItem extends StatelessWidget {
++  final String count;
++  final String label;
++
++  const _StatItem({Key? key, required this.count, required this.label})
++    : super(key: key);
++
++  @override
++  Widget build(BuildContext context) {
++    return Column(
++      children: [
++        Text(
++          count,
++          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
++        ),
++        const SizedBox(height: 4),
++        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
++      ],
++    );
++  }
++}
++
++class _ContributorChip extends StatelessWidget {
++  final String name;
++  final int count;
++
++  const _ContributorChip({Key? key, required this.name, required this.count})
++    : super(key: key);
++
++  @override
++  Widget build(BuildContext context) {
++    return Container(
++      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
++      decoration: BoxDecoration(
++        color: Colors.white,
++        borderRadius: BorderRadius.circular(12),
++      ),
++      child: Row(
++        children: [
++          CircleAvatar(
++            radius: 14,
++            backgroundColor: const Color(0xFFF0F0F0),
++            child: Text(
++              name.isNotEmpty ? name[0] : '?',
++              style: const TextStyle(color: Colors.black54),
++            ),
++          ),
++          const SizedBox(width: 8),
++          Column(
++            crossAxisAlignment: CrossAxisAlignment.start,
++            children: [
++              Text(
++                name,
++                style: const TextStyle(
++                  fontSize: 13,
++                  fontWeight: FontWeight.w600,
++                ),
++              ),
++              const SizedBox(height: 2),
++              Text(
++                '$count مساهمة',
++                style: const TextStyle(fontSize: 11, color: Colors.grey),
++              ),
++            ],
++          ),
++        ],
++      ),
++    );
++  }
++}
++
++class _SocietyTipCard extends StatelessWidget {
++  final CommentModel comment;
++  final VoidCallback onLike;
++
++  const _SocietyTipCard({Key? key, required this.comment, required this.onLike})
++    : super(key: key);
++
++  @override
++  Widget build(BuildContext context) {
++    final timeAgoStr = _timeAgoArabic(comment.createdAt);
++
++    return Material(
++      color: Colors.white,
++      borderRadius: BorderRadius.circular(14),
++      child: Padding(
++        padding: const EdgeInsets.all(12),
++        child: Column(
++          crossAxisAlignment: CrossAxisAlignment.start,
++          children: [
++            // header row: avatar + name + badge
++            Row(
++              crossAxisAlignment: CrossAxisAlignment.center,
++              children: [
++                CircleAvatar(
++                  radius: 18,
++                  backgroundColor: const Color(0xFFEFEFEF),
++                  child: Text(
++                    comment.username?.isNotEmpty == true
++                        ? comment.username![0]
++                        : '?',
++                  ),
++                ),
++                const SizedBox(width: 10),
++                Expanded(
++                  child: Column(
++                    crossAxisAlignment: CrossAxisAlignment.start,
++                    children: [
++                      Text(
++                        comment.username ?? 'مستخدم',
++                        style: const TextStyle(fontWeight: FontWeight.w700),
++                      ),
++                      const SizedBox(height: 4),
++                      Text(
++                        timeAgoStr,
++                        style: const TextStyle(
++                          fontSize: 12,
++                          color: Colors.grey,
++                        ),
++                      ),
++                    ],
++                  ),
++                ),
++                Container(
++                  padding: const EdgeInsets.symmetric(
++                    horizontal: 8,
++                    vertical: 6,
++                  ),
++                  decoration: BoxDecoration(
++                    color: const Color(0xFFF0FFF6),
++                    borderRadius: BorderRadius.circular(12),
++                  ),
++                  child: const Text(
++                    'مفيد',
++                    style: TextStyle(fontSize: 12, color: kPrimaryGreen),
++                  ),
++                ),
++              ],
++            ),
++
++            const SizedBox(height: 10),
++            // comment content
++            Text(
++              comment.content ?? '',
++              style: const TextStyle(fontSize: 13, height: 1.45),
++            ),
++            const SizedBox(height: 12),
++            // actions row (only likes; no replies)
++            Row(
++              children: [
++                InkWell(
++                  onTap: onLike,
++                  child: Row(
++                    children: [
++                      const Icon(
++                        Icons.thumb_up_alt_outlined,
++                        size: 18,
++                        color: Colors.grey,
++                      ),
++                      const SizedBox(width: 6),
++                      Text('${comment.likes ?? 0}'),
++                    ],
++                  ),
++                ),
++              ],
++            ),
++          ],
++        ),
++      ),
++    );
++  }
++}
++
++// ---------------- helpers ----------------
++
++String _timeAgoArabic(DateTime? dt) {
++  if (dt == null) return 'منذ وقت غير معلوم';
++
++  final Duration diff = DateTime.now().difference(dt);
++
++  if (diff.inMinutes < 1) {
++    return 'منذ لحظات';
++  } else if (diff.inMinutes < 60) {
++    final m = diff.inMinutes;
++    return 'منذ $m دقيقة';
++  } else if (diff.inHours < 24) {
++    final h = diff.inHours;
++    return 'منذ $h ساعة';
++  } else if (diff.inDays == 1) {
++    return 'منذ يوم';
++  } else if (diff.inDays < 7) {
++    return 'منذ ${diff.inDays} أيام';
++  } else {
++    return '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
++  }
++}
