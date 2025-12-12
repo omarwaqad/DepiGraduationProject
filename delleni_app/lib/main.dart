@@ -1,6 +1,5 @@
 // lib/main.dart - Updated
-import 'package:delleni_app/app/controllers/home_controller.dart';
-import 'package:delleni_app/app/controllers/service_controller.dart';
+import 'package:delleni_app/app/bindings/app_binding.dart';
 import 'package:delleni_app/app/models/user_progress.dart';
 import 'package:delleni_app/app/pages/login.dart';
 import 'package:delleni_app/app/pages/main_layout.dart';
@@ -22,9 +21,8 @@ void main() async {
 
   await Supabase.initialize(url: url, anonKey: anonKey);
 
-  // Register GetX controllers
-  Get.put(ServiceController());
-  Get.put(HomeController()); // Add HomeController here
+  // Ensure bindings are registered before runApp (belt-and-suspenders with initialBinding)
+  AppBinding().dependencies();
 
   runApp(Delleni());
 }
@@ -41,6 +39,7 @@ class Delleni extends StatelessWidget {
     return GetMaterialApp(
       title: "Delleni",
       debugShowCheckedModeBanner: false,
+      initialBinding: AppBinding(),
       theme: ThemeData(
         primaryColor: green,
         scaffoldBackgroundColor: Colors.white,

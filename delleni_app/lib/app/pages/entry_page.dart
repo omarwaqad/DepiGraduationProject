@@ -1,4 +1,4 @@
-import 'package:delleni_app/app/models/auth_service.dart';
+import 'package:delleni_app/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'login.dart';
@@ -13,7 +13,8 @@ class EntryPage extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () async {
-              await AuthService().logout();
+              final auth = Get.find<AuthController>();
+              await auth.logout();
               Get.off(Login());
             },
             icon: const Icon(Icons.logout),

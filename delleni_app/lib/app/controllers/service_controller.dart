@@ -4,13 +4,66 @@ import 'package:delleni_app/app/models/comments.dart';
 import 'package:delleni_app/app/models/location.dart';
 import 'package:delleni_app/app/models/service.dart';
 import 'package:delleni_app/app/models/user_progress.dart';
+import 'package:delleni_app/core/supabase_client_provider.dart';
+import 'package:delleni_app/features/comments/data/datasources/comments_remote_ds.dart';
+import 'package:delleni_app/features/comments/data/repositories/comments_repository_impl.dart';
+import 'package:delleni_app/features/comments/domain/repositories/comments_repository.dart';
+import 'package:delleni_app/features/comments/domain/usecases/add_comment.dart';
+import 'package:delleni_app/features/comments/domain/usecases/fetch_all_comments.dart';
+import 'package:delleni_app/features/comments/domain/usecases/fetch_comments_for_service.dart';
+import 'package:delleni_app/features/comments/domain/usecases/update_reaction.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+part 'service_controller_services.dart';
+part 'service_controller_progress.dart';
+part 'service_controller_locations.dart';
+part 'service_controller_comments.dart';
+
 class ServiceController extends GetxController {
+  ServiceController({SupabaseClientProvider? clientProvider, CommentsRepository? commentsRepository})
+      : supabase = (clientProvider ?? SupabaseClientProvider()).client,
+        commentsRepo = commentsRepository ??
+            CommentsRepositoryImpl(
+              CommentsRemoteDataSourceImpl(
+                (clientProvider ?? SupabaseClientProvider()).client,
+              ),
+            ),
+        fetchCommentsForService = FetchCommentsForService(
+          commentsRepository ??
+              CommentsRepositoryImpl(
+                CommentsRemoteDataSourceImpl(
+                  (clientProvider ?? SupabaseClientProvider()).client,
+                ),
+              ),
+        ),
+        fetchAllCommentsUseCase = FetchAllComments(
+          commentsRepository ??
+              CommentsRepositoryImpl(
+                CommentsRemoteDataSourceImpl(
+                  (clientProvider ?? SupabaseClientProvider()).client,
+                ),
+              ),
+        ),
+        addCommentUseCase = AddComment(
+          commentsRepository ??
+              CommentsRepositoryImpl(
+                CommentsRemoteDataSourceImpl(
+                  (clientProvider ?? SupabaseClientProvider()).client,
+                ),
+              ),
+        ),
+        updateReactionUseCase = UpdateReaction(
+          commentsRepository ??
+              CommentsRepositoryImpl(
+                CommentsRemoteDataSourceImpl(
+                  (clientProvider ?? SupabaseClientProvider()).client,
+                ),
+              ),
+        );
   // current device position (nullable)
   final currentPosition = Rxn<Position>();
 
@@ -80,7 +133,13 @@ class ServiceController extends GetxController {
     }
   }
 
-  final supabase = Supabase.instance.client;
+  final SupabaseClient supabase;
+
+  final CommentsRepository commentsRepo;
+  final FetchCommentsForService fetchCommentsForService;
+  final FetchAllComments fetchAllCommentsUseCase;
+  final AddComment addCommentUseCase;
+  final UpdateReaction updateReactionUseCase;
 
   // Hive box for per-user per-service progress
   late Box<UserProgress> progressBox;
@@ -120,350 +179,11 @@ class ServiceController extends GetxController {
   }
 
   // ========================= SERVICES =========================
-
-  Future<void> fetchServices() async {
-    try {
-      isLoading.value = true;
-
-      final res = await supabase
-          .from('services')
-          .select()
-          .order('created_at', ascending: false);
-
-      final data = res as List<dynamic>;
-
-      services.value = data.map((e) {
-        if (e is Map<String, dynamic>) return Service.fromMap(e);
-        return Service.fromMap(Map<String, dynamic>.from(e as Map));
-      }).toList();
-    } catch (e, st) {
-      // ignore: avoid_print
-      print('fetchServices error: $e\n$st');
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-  /// Select a service and load persisted progress (if available),
-  /// then fetch locations + comments for that service.
-  Future<void> selectService(Service service) async {
-    selectedService.value = service;
-
-    final userId = supabase.auth.currentUser?.id;
-    if (userId == null) {
-      // Not logged in → no persistent progress
-      stepCompleted.value = List<bool>.filled(service.steps.length, false);
-    } else {
-      // Try to load from Hive
-      final key = _hiveKeyForUserService(userId, service.id);
-      final progress = progressBox.get(key);
-
-      if (progress != null) {
-        try {
-          stepCompleted.value = progress.stepsCompleted;
-          // Ensure length matches number of steps in service
-          if (stepCompleted.length != service.steps.length) {
-            stepCompleted.value = List<bool>.filled(
-              service.steps.length,
-              false,
-            );
-            await _saveProgressForService(service.id);
-          }
-        } catch (_) {
-          stepCompleted.value = List<bool>.filled(service.steps.length, false);
-          await _saveProgressForService(service.id);
-        }
-      } else {
-        stepCompleted.value = List<bool>.filled(service.steps.length, false);
-        await _saveProgressForService(service.id);
-      }
-    }
-
-    // Clear & fetch locations/comments for this service
-    locations.clear();
-    comments.clear();
-    await fetchLocationsForSelectedService();
-    await fetchCommentsForSelectedService();
-  }
-
-  String _hiveKeyForUserService(String userId, String serviceId) =>
-      '${userId}_$serviceId';
-
-  Future<void> _saveProgressForService(String serviceId) async {
-    final userId = supabase.auth.currentUser?.id;
-    if (userId == null) return;
-
-    final key = _hiveKeyForUserService(userId, serviceId);
-    final progress = UserProgress(
-      userId: userId,
-      serviceId: serviceId,
-      stepsCompleted: stepCompleted.toList(),
-      lastUpdated: DateTime.now(),
-    );
-
-    await progressBox.put(key, progress);
-  }
-
-  void toggleStep(int index) {
-    if (index < 0 || index >= stepCompleted.length) return;
-
-    stepCompleted[index] = !stepCompleted[index];
-    stepCompleted.refresh();
-
-    final svc = selectedService.value;
-    if (svc != null) {
-      _saveProgressForService(svc.id);
-    }
-  }
+  // Implemented in part file service_controller_services.dart
 
   // ========================= LOCATIONS =========================
-
-  Future<void> fetchLocationsForSelectedService() async {
-    final svc = selectedService.value;
-    if (svc == null) return;
-
-    try {
-      final res = await supabase
-          .from('locations')
-          .select()
-          .eq('service_id', svc.id)
-          .order('name', ascending: true);
-
-      final list = (res as List<dynamic>)
-          .map((e) => LocationModel.fromMap(Map<String, dynamic>.from(e)))
-          .toList();
-      locations.value = list;
-    } catch (e) {
-      // ignore: avoid_print
-      print('fetchLocations error: $e');
-    }
-  }
-
-  /// Fetch ALL locations from the database (not tied to a specific service)
-  Future<void> fetchAllLocations() async {
-    try {
-      final res = await supabase
-          .from('locations')
-          .select()
-          .order('name', ascending: true);
-
-      final list = (res as List<dynamic>)
-          .map((e) => LocationModel.fromMap(Map<String, dynamic>.from(e)))
-          .toList();
-
-      locations.value = list;
-    } catch (e) {
-      print('fetchAllLocations error: $e');
-      Get.snackbar("خطأ", "حدث خطأ أثناء تحميل الأماكن");
-    }
-  }
+  // Implemented in part file service_controller_locations.dart
 
   // ========================= COMMENTS =========================
-
-  Future<void> fetchCommentsForSelectedService() async {
-    final svc = selectedService.value;
-    if (svc == null) return;
-
-    try {
-      isCommentsLoading.value = true;
-
-      final res = await supabase
-          .from('comments')
-          .select()
-          .eq('service_id', svc.id)
-          .order('created_at', ascending: true);
-
-      final list = (res as List<dynamic>)
-          .map((e) => CommentModel.fromMap(Map<String, dynamic>.from(e)))
-          .toList();
-
-      comments.value = list;
-    } catch (e) {
-      // ignore: avoid_print
-      print('fetchComments error: $e -- falling back to local comments if any');
-      final fallback = localCommentFallback[svc.id] ?? [];
-      comments.value = fallback;
-    } finally {
-      isCommentsLoading.value = false;
-    }
-  }
-
-  // In service_controller.dart, add this method to ServiceController class:
-
-  /// Fetch all comments from all services (for society page)
-  Future<List<CommentModel>> fetchAllComments() async {
-    try {
-      // Fetch all comments from server
-      final res = await supabase
-          .from('comments')
-          .select()
-          .order('created_at', ascending: false);
-
-      final serverComments = (res as List<dynamic>)
-          .map((e) => CommentModel.fromMap(Map<String, dynamic>.from(e)))
-          .toList();
-
-      // Add local fallback comments
-      final allLocalComments = localCommentFallback.values
-          .expand((comments) => comments)
-          .toList();
-
-      // Combine and sort by date (newest first)
-      final allComments = [...serverComments, ...allLocalComments];
-      allComments.sort(
-        (a, b) =>
-            (b.createdAt ?? DateTime(0)).compareTo(a.createdAt ?? DateTime(0)),
-      );
-
-      return allComments;
-    } catch (e) {
-      print('fetchAllComments error: $e');
-      // Return only local comments if server fails
-      return localCommentFallback.values.expand((comments) => comments).toList()
-        ..sort(
-          (a, b) => (b.createdAt ?? DateTime(0)).compareTo(
-            a.createdAt ?? DateTime(0),
-          ),
-        );
-    }
-  }
-
-  /// Get logged-in username from `users` table (first_name + last_name)
-  Future<String?> getLoggedInUsername() async {
-    try {
-      final userId = supabase.auth.currentUser?.id;
-      if (userId == null) return null;
-
-      final response = await supabase
-          .from('users')
-          .select('first_name, last_name')
-          .eq('id', userId)
-          .single();
-
-      if (response != null) {
-        final firstName = response['first_name'] ?? '';
-        final lastName = response['last_name'] ?? '';
-        return '$firstName $lastName'.trim();
-      }
-    } catch (e) {
-      // ignore: avoid_print
-      print('Error fetching username: $e');
-    }
-    return null;
-  }
-
-  /// Post a comment.
-  /// If [username] is empty, we'll try to get it from the logged-in user;
-  /// if that fails, we fall back to "Anonymous".
-  /// Post a comment.
-  /// Uses the logged-in user's name if available, otherwise "Anonymous".
-  Future<void> addComment(String content) async {
-    final svc = selectedService.value;
-    if (svc == null) return;
-
-    // Get username from DB (users table), or fallback
-    String username = await getLoggedInUsername() ?? 'Anonymous';
-    if (username.trim().isEmpty) {
-      username = 'Anonymous';
-    }
-
-    final comment = CommentModel(
-      id: DateTime.now().microsecondsSinceEpoch.toString(),
-      serviceId: svc.id,
-      username: username,
-      content: content,
-      likes: 0,
-      createdAt: DateTime.now(),
-    );
-
-    // Optimistic append locally
-    comments.insert(0, comment);
-    comments.refresh();
-
-    // Try to insert to server
-    try {
-      await supabase.from('comments').insert(comment.toMapForInsert());
-      await fetchCommentsForSelectedService(); // sync with server
-    } catch (e) {
-      // ignore: avoid_print
-      print('Failed to insert comment to server: $e');
-      localCommentFallback.putIfAbsent(svc.id, () => []).insert(0, comment);
-    }
-  }
-
-  /// Like a comment - user can only like OR dislike once
-  Future<void> likeComment(CommentModel c) async {
-    final currentReaction = userReactions[c.id];
-
-    // If already liked, remove the like
-    if (currentReaction == 'like') {
-      c.likes--;
-      userReactions[c.id] = null;
-    }
-    // If disliked, switch to like
-    else if (currentReaction == 'dislike') {
-      c.dislikes--;
-      c.likes++;
-      userReactions[c.id] = 'like';
-    }
-    // If no reaction, add like
-    else {
-      c.likes++;
-      userReactions[c.id] = 'like';
-    }
-
-    comments.refresh();
-
-    // Update on server
-    try {
-      await supabase.from('comments').update({
-        'likes': c.likes,
-        'dislikes': c.dislikes,
-      }).eq('id', c.id);
-    } catch (e) {
-      // ignore: avoid_print
-      print('Failed to update reaction on server: $e — keeping locally');
-    }
-  }
-
-  /// Dislike a comment - user can only like OR dislike once
-  Future<void> dislikeComment(CommentModel c) async {
-    final currentReaction = userReactions[c.id];
-
-    // If already disliked, remove the dislike
-    if (currentReaction == 'dislike') {
-      c.dislikes--;
-      userReactions[c.id] = null;
-    }
-    // If liked, switch to dislike
-    else if (currentReaction == 'like') {
-      c.likes--;
-      c.dislikes++;
-      userReactions[c.id] = 'dislike';
-    }
-    // If no reaction, add dislike
-    else {
-      c.dislikes++;
-      userReactions[c.id] = 'dislike';
-    }
-
-    comments.refresh();
-
-    // Update on server
-    try {
-      await supabase.from('comments').update({
-        'likes': c.likes,
-        'dislikes': c.dislikes,
-      }).eq('id', c.id);
-    } catch (e) {
-      // ignore: avoid_print
-      print('Failed to update reaction on server: $e — keeping locally');
-    }
-  }
-
-  /// Check if user has liked a comment
-  bool hasLiked(String commentId) => userReactions[commentId] == 'like';
-
-  /// Check if user has disliked a comment
-  bool hasDisliked(String commentId) => userReactions[commentId] == 'dislike';
+  // Implemented in part file service_controller_comments.dart
 }

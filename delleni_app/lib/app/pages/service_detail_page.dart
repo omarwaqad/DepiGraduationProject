@@ -64,7 +64,7 @@ class ServiceDetailPage extends StatelessWidget {
                       const SizedBox(height: 12),
                       _buildCommentsButton(),
                       const SizedBox(height: 16),
-                      _buildActionButton(),
+                      // _buildActionButton(),
                       const SizedBox(height: 24),
                     ],
                   );

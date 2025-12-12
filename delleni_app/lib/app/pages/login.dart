@@ -2,7 +2,7 @@ import 'package:delleni_app/app/pages/main_layout.dart';
 import 'package:delleni_app/app/pages/register_page.dart';
 import 'package:flutter/material.dart';
 
-import '../models/auth_service.dart';
+import 'package:delleni_app/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:get/get.dart';
 
 class Login extends StatelessWidget {
@@ -10,7 +10,7 @@ class Login extends StatelessWidget {
 
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final service = AuthService();
+  final AuthController auth = Get.find<AuthController>();
 
   // GetX state for password visibility
   final RxBool isPasswordObscured = true.obs;
@@ -199,7 +199,7 @@ class Login extends StatelessWidget {
                             onPressed: () async {
                               final email = emailController.text;
                               final password = passwordController.text;
-                              final (success, message) = await service.login(
+                              final (success, message) = await auth.login(
                                 email,
                                 password,
                               );

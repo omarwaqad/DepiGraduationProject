@@ -1,7 +1,7 @@
 import 'package:delleni_app/app/pages/login.dart';
+import 'package:delleni_app/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../models/auth_service.dart';
 
 class RegisterPage extends StatelessWidget {
   RegisterPage({super.key});
@@ -13,7 +13,7 @@ class RegisterPage extends StatelessWidget {
   final lastNameController = TextEditingController();
   final phoneController = TextEditingController();
   final addressController = TextEditingController();
-  final service = AuthService();
+  final AuthController auth = Get.find<AuthController>();
 
   final RxBool isPasswordObscured = true.obs;
 
@@ -215,7 +215,7 @@ class RegisterPage extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(24),
                               ),
                             ),
-                            onPressed: () {
+                            onPressed: () async {
                               final firstname = firstNameController.text;
                               final lastname = lastNameController.text;
                               final email = emailController.text;
@@ -234,37 +234,29 @@ class RegisterPage extends StatelessWidget {
                                 return;
                               }
 
-                              service
-                                  .register(
-                                    firstname,
-                                    lastname,
-                                    email,
-                                    phonenumber,
-                                    address,
-                                    password,
-                                  )
-                                  .then((success) {
-                                    if (success) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                            'Registration successful',
-                                          ),
-                                        ),
-                                      );
-                                      Navigator.pop(context);
-                                    } else {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Registration failed'),
-                                        ),
-                                      );
-                                    }
-                                  });
+                              final (ok, msg) = await auth.register(
+                                firstName: firstname,
+                                lastName: lastname,
+                                email: email,
+                                phone: phonenumber,
+                                address: address,
+                                password: password,
+                              );
+
+                              if (ok) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Registration successful'),
+                                  ),
+                                );
+                                Navigator.pop(context);
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(msg ?? 'Registration failed'),
+                                  ),
+                                );
+                              }
                             },
                             child: const Text(
                               'إنشاء الحساب',
