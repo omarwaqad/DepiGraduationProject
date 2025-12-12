@@ -13,7 +13,6 @@ const Color kPrimaryGreen = Color(0xFF219A6D);
 const Color kSecondaryOrange = Color(0xFFDD755A);
 const Color kBackgroundGrey = Color(0xFFF5F5F5);
 
-// Optional UI config for known services (by Arabic name from DB)
 class ServiceUIConfig {
   final IconData icon;
   final Color bgColor;
@@ -21,45 +20,63 @@ class ServiceUIConfig {
   const ServiceUIConfig({required this.icon, required this.bgColor});
 }
 
-// Key = serviceName from Supabase (Arabic)
-const Map<String, ServiceUIConfig> serviceUIMap = {
-  'قيد عائلي': ServiceUIConfig(
+/// ✅ Normalize Arabic keys so small differences from Supabase won't break icons:
+/// - trims spaces
+/// - collapses multiple spaces
+/// - unifies أ/إ/آ -> ا
+/// - unifies ى -> ي
+/// - unifies ة -> ه (optional but helpful)
+String normalizeServiceKey(String s) {
+  return s
+      .trim()
+      .replaceAll(RegExp(r'\s+'), ' ')
+      .replaceAll('أ', 'ا')
+      .replaceAll('إ', 'ا')
+      .replaceAll('آ', 'ا')
+      .replaceAll('ى', 'ي')
+      .replaceAll('ة', 'ه');
+}
+
+// ✅ Keys here are normalized versions of your Supabase service names
+final Map<String, ServiceUIConfig> serviceUIMap = {
+  normalizeServiceKey('قيد عائلي'): const ServiceUIConfig(
     icon: Icons.family_restroom_rounded,
     bgColor: Color(0xFFE7F8EF),
   ),
-  'تقديم الجامعات': ServiceUIConfig(
+  normalizeServiceKey('تقديم الجامعات'): const ServiceUIConfig(
     icon: Icons.school_rounded,
     bgColor: Color(0xFFFFF2EE),
   ),
-  'طلب وظيفة حكومية': ServiceUIConfig(
+  normalizeServiceKey('طلب وظيفة حكومية'): const ServiceUIConfig(
     icon: Icons.work_rounded,
     bgColor: Color(0xFFE7F8EF),
   ),
-  'استخراج الباسبور': ServiceUIConfig(
+  normalizeServiceKey('استخراج الباسبور'): const ServiceUIConfig(
     icon: Icons.flight_takeoff_rounded,
     bgColor: Color(0xFFFFF2EE),
   ),
-  'اشتراك المترو': ServiceUIConfig(
+
+  normalizeServiceKey('اشتراك المترو'): const ServiceUIConfig(
     icon: Icons.directions_subway_filled_rounded,
     bgColor: Color(0xFFE7F8EF),
   ),
-  'التامين الصحى': ServiceUIConfig(
+  normalizeServiceKey('التأمين الصحي'): const ServiceUIConfig(
     icon: Icons.medical_services_rounded,
     bgColor: Color(0xFFFFF2EE),
   ),
-  'استخراج بطاقة الرقم القومى': ServiceUIConfig(
+  normalizeServiceKey('استخراج بطاقة الرقم القومي'): const ServiceUIConfig(
     icon: Icons.credit_card_rounded,
     bgColor: Color(0xFFE7F8EF),
   ),
-  'تجديد الباسبور': ServiceUIConfig(
+  normalizeServiceKey('تجديد الباسبور'): const ServiceUIConfig(
     icon: Icons.autorenew_rounded,
     bgColor: Color(0xFFFFF2EE),
   ),
-  'رخصة القيادة الشخصية': ServiceUIConfig(
+  normalizeServiceKey('رخصة القيادة الشخصية'): const ServiceUIConfig(
     icon: Icons.badge_rounded,
     bgColor: Color(0xFFE7F8EF),
   ),
-  'رخصة السيارة': ServiceUIConfig(
+  normalizeServiceKey('رخصة السيارة'): const ServiceUIConfig(
     icon: Icons.directions_car_filled_rounded,
     bgColor: Color(0xFFFFF2EE),
   ),
@@ -74,17 +91,16 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Directionality(
-      textDirection: TextDirection.rtl, // RTL forced
+      textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: kBackgroundGrey,
         bottomNavigationBar: Obx(
           () => BottomNavigationBar(
             currentIndex: homeCtrl.currentIndex.value,
             onTap: (index) {
-              homeCtrl.onTabChanged(index); // update selected tab state
+              homeCtrl.onTabChanged(index);
 
               if (index == 1) {
-                // طلباتي
                 Get.to(() => const UserProgressScreen());
               }
             },
@@ -121,7 +137,6 @@ class HomePage extends StatelessWidget {
             ],
           ),
         ),
-
         body: SafeArea(
           child: SingleChildScrollView(
             child: Column(
@@ -142,11 +157,10 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  // ================= HEADER =================
   Widget _buildHeader(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      padding: const EdgeInsets.fromLTRB(16, 22, 16, 26),
       decoration: const BoxDecoration(
         color: kPrimaryGreen,
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
@@ -158,70 +172,27 @@ class HomePage extends StatelessWidget {
             'مرحباً 👋',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
               color: Colors.white,
-              fontWeight: FontWeight.w700,
-              fontSize: 24,
+              fontWeight: FontWeight.w800,
+              fontSize: 28,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 10),
           Text(
             'كيف يمكننا مساعدتك اليوم؟',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.white.withOpacity(0.9),
-              fontSize: 14,
+              color: Colors.white.withOpacity(0.95),
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              height: 1.4,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 18),
           Container(
-            height: 44,
+            width: 90,
+            height: 4,
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 6,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Row(
-              children: [
-                const Icon(Icons.search_rounded, color: Colors.grey, size: 22),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Obx(() {
-                    return TextField(
-                      controller: homeCtrl.searchController, // ADD THIS
-                      onChanged: (v) => serviceCtrl.searchQuery.value = v,
-                      decoration: InputDecoration(
-                        isCollapsed: true,
-                        border: InputBorder.none,
-                        hintText: 'ابحث عن خدمة...',
-                        suffixIcon: serviceCtrl.searchQuery.value.isEmpty
-                            ? null
-                            : GestureDetector(
-                                onTap: () {
-                                  homeCtrl.searchController
-                                      .clear(); // UPDATE THIS
-                                  serviceCtrl.clearSearch();
-                                },
-                                child: const Padding(
-                                  padding: EdgeInsets.all(10.0),
-                                  child: Icon(
-                                    Icons.close,
-                                    size: 18,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ),
-                      ),
-                      style: const TextStyle(fontSize: 14),
-                      cursorColor: kPrimaryGreen,
-                    );
-                  }),
-                ),
-              ],
+              color: Colors.white.withOpacity(0.45),
+              borderRadius: BorderRadius.circular(12),
             ),
           ),
         ],
@@ -229,7 +200,6 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  // ================= VISION BANNER =================
   Widget _buildVisionBanner() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -257,7 +227,7 @@ class HomePage extends StatelessWidget {
                   ),
                   SizedBox(height: 4),
                   Text(
-                    'نحو تحول رقمي كامل - إنترنت سريع وغير محدود لدعم الابتكار والمستقبلين ونمو الوطن',
+                    'نحو حكومة رقمية متكاملة - خدمات آلية سهلة الوصول وموثوقة، تدعم التنمية المستدامة والشفافية وتحسين جودة حياة المواطن',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 12,
@@ -287,7 +257,6 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  // ================= SERVICES TITLE =================
   Widget _buildServicesTitle() {
     return const Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -305,7 +274,6 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  // ================= SERVICES SECTION =================
   Widget _buildServicesSection() {
     return Obx(() {
       if (serviceCtrl.isLoading.value) {
@@ -331,14 +299,13 @@ class HomePage extends StatelessWidget {
     });
   }
 
-  // ================= SERVICES GRID =================
   Widget _buildServicesGrid() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: serviceCtrl.services.length, // from Supabase
+        itemCount: serviceCtrl.services.length,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           mainAxisSpacing: 12,
@@ -348,8 +315,9 @@ class HomePage extends StatelessWidget {
         itemBuilder: (context, index) {
           final s = serviceCtrl.services[index];
 
-          // Optional custom icon/color based on Arabic name
-          final ui = serviceUIMap[s.serviceName];
+          // ✅ normalized lookup
+          final key = normalizeServiceKey(s.serviceName);
+          final ui = serviceUIMap[key];
 
           final icon = ui?.icon ?? Icons.widgets_rounded;
           final bgColor = ui?.bgColor ?? const Color(0xFFE7F8EF);
@@ -368,8 +336,6 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-
-// ================= REUSABLE SERVICE CARD =================
 
 class ServiceCard extends StatelessWidget {
   final String title;
