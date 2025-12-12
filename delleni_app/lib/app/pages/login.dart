@@ -206,7 +206,8 @@ class Login extends StatelessWidget {
                               if (success) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('Login successful'),
+                                    content: Text('تم تسجيل الدخول بنجاح'),
+                                    backgroundColor: Color(0xFF219A6D),
                                   ),
                                 );
                                 // In login.dart, after successful authentication
@@ -215,7 +216,10 @@ class Login extends StatelessWidget {
                                 ); // Instead of HomePage()
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(message ?? 'Login failed')),
+                                  const SnackBar(
+                                    content: Text('فشل تسجيل الدخول. يرجى التحقق من البريد الإلكتروني وكلمة المرور'),
+                                    backgroundColor: Colors.red,
+                                  ),
                                 );
                               }
                             },
