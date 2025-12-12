@@ -1,6 +1,7 @@
+import 'package:delleni_app/app/controllers/profile_controller.dart';
+import 'package:delleni_app/app/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:delleni_app/app/controllers/profile_controller.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -10,6 +11,8 @@ class ProfilePage extends StatelessWidget {
     final controller = Get.put(ProfileController());
     final screenWidth = MediaQuery.of(context).size.width;
     final isSmallScreen = screenWidth < 360;
+
+    
     
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -68,56 +71,6 @@ class ProfilePage extends StatelessWidget {
                       ),
                       child: Row(
                         children: [
-                          // Settings Icon
-                          IconButton(
-                            onPressed: () {},
-                            icon: Icon(Icons.settings_outlined),
-                            color: Colors.grey[400],
-                            iconSize: isSmallScreen ? 20 : 24,
-                          ),
-                          
-                          Spacer(),
-                          
-                          // User Info
-                          Flexible(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  controller.userName.value,
-                                  style: TextStyle(
-                                    fontSize: isSmallScreen ? 16 : 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.grey[800],
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                SizedBox(height: 4),
-                                Text(
-                                  controller.userEmail.value,
-                                  style: TextStyle(
-                                    fontSize: isSmallScreen ? 11 : 13,
-                                    color: Colors.grey[500],
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                if (controller.userPhone.value.isNotEmpty)
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 2),
-                                    child: Text(
-                                      controller.userPhone.value,
-                                      style: TextStyle(
-                                        fontSize: isSmallScreen ? 11 : 13,
-                                        color: Colors.grey[500],
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                          
-                          SizedBox(width: 15),
-                          
                           // Profile Avatar
                           Container(
                             width: isSmallScreen ? 60 : 70,
@@ -137,6 +90,61 @@ class ProfilePage extends StatelessWidget {
                               ),
                             ),
                           ),
+
+                          SizedBox(width: 15),
+
+                          // User Info
+                          Flexible(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  controller.userName.value,
+                                  style: TextStyle(
+                                    fontSize: isSmallScreen ? 16 : 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey[800],
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.left,
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  controller.userEmail.value,
+                                  style: TextStyle(
+                                    fontSize: isSmallScreen ? 11 : 13,
+                                    color: Colors.grey[500],
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.left,
+                                ),
+                                if (controller.userPhone.value.isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 2),
+                                    child: Text(
+                                      controller.userPhone.value,
+                                      style: TextStyle(
+                                        fontSize: isSmallScreen ? 11 : 13,
+                                        color: Colors.grey[500],
+                                      ),
+                                      textAlign: TextAlign.left,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+
+                          // Spacer(),
+
+                          // // Settings Icon
+                          // IconButton(
+                          //   onPressed: () {
+                          //   Get.to(() => SettingsPage());
+                          //   },
+                          //   icon: Icon(Icons.settings_outlined),
+                          //   color: Colors.grey[400],
+                          //   iconSize: isSmallScreen ? 20 : 24,
+                          // ),
                         ],
                       ),
                     ),
@@ -183,163 +191,25 @@ class ProfilePage extends StatelessWidget {
               
               SizedBox(height: 20),
               
-              // Settings & Preferences Section
+              // Settings Section
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'الإعدادات والتفضيلات',
-                      style: TextStyle(
-                        fontSize: isSmallScreen ? 16 : 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey[800],
-                      ),
-                    ),
-                    
-                    SizedBox(height: 16),
-                    
-                    // Notifications Toggle
-                    _buildSettingCard(
-                      icon: Icons.notifications_outlined,
-                      title: 'الإشعارات',
-                      subtitle: 'إدارة تنبيهات التطبيق',
-                      trailing: Switch(
-                        value: controller.notificationsEnabled.value,
-                        onChanged: (value) {
-                          controller.toggleNotifications(value);
-                        },
-                        activeColor: Color(0xFF2E9B6F),
-                      ),
-                      isSmallScreen: isSmallScreen,
-                    ),
-                    
-                    SizedBox(height: 12),
-                    
-                    // Favorite Services
-                    _buildSettingCard(
-                      icon: Icons.star_outline,
-                      title: 'الخدمات المفضلة',
-                      subtitle: '${controller.favoriteServicesCount.value} خدمات محفوظة',
-                      trailing: Icon(Icons.chevron_left, color: Colors.grey[400]),
-                      onTap: () {},
-                      isSmallScreen: isSmallScreen,
-                    ),
-                    
-                    SizedBox(height: 12),
-                    
-                    // Settings
+                    // Settings Card
                     _buildSettingCard(
                       icon: Icons.settings_outlined,
-                      title: 'الإعدادات',
-                      subtitle: 'تخصيص التطبيق',
+                      title: 'إعدادات الحساب',
+                      subtitle: 'تعديل المعلومات الشخصية',
                       trailing: Icon(Icons.chevron_left, color: Colors.grey[400]),
-                      onTap: () {},
+                      onTap: () {
+                        Get.to(() => SettingsPage());
+                      },
                       isSmallScreen: isSmallScreen,
                     ),
                     
-                    SizedBox(height: 20),
-                    
-                    // Achievements Section
-                    // Text(
-                    //   'الإنجازات',
-                    //   style: TextStyle(
-                    //     fontSize: isSmallScreen ? 16 : 18,
-                    //     fontWeight: FontWeight.bold,
-                    //     color: Colors.grey[800],
-                    //   ),
-                    // ),
-                    
                     SizedBox(height: 16),
-                    
-                    // Active User Badge
-                    // Container(
-                    //   padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
-                    //   decoration: BoxDecoration(
-                    //     gradient: LinearGradient(
-                    //       colors: [Color(0xFFFFF4E6), Color(0xFFFFE5CC)],
-                    //       begin: Alignment.topRight,
-                    //       end: Alignment.bottomLeft,
-                    //     ),
-                    //     borderRadius: BorderRadius.circular(16),
-                    //     border: Border.all(
-                    //       color: Color(0xFFFFD699),
-                    //       width: 1.5,
-                    //     ),
-                    //   ),
-                    //   child: Row(
-                    //     children: [
-                    //       // Emoji Icons
-                    //       Column(
-                    //         children: [
-                    //           Text('⭐', style: TextStyle(fontSize: isSmallScreen ? 16 : 20)),
-                    //           SizedBox(height: 4),
-                    //           Text('📋', style: TextStyle(fontSize: isSmallScreen ? 16 : 20)),
-                    //         ],
-                    //       ),
-                          
-                    //       SizedBox(width: 15),
-                          
-                    //       Spacer(),
-                          
-                    //       // Text Content
-                    //       Flexible(
-                    //         child: Column(
-                    //           crossAxisAlignment: CrossAxisAlignment.end,
-                    //           children: [
-                    //             Text(
-                    //               'مستخدم نشط',
-                    //               style: TextStyle(
-                    //                 fontSize: isSmallScreen ? 16 : 18,
-                    //                 fontWeight: FontWeight.bold,
-                    //                 color: Colors.grey[800],
-                    //               ),
-                    //             ),
-                    //             SizedBox(height: 6),
-                    //             Text(
-                    //               'أكملت ${controller.completedCount.value} إجراء حكومي بنجاح!',
-                    //               style: TextStyle(
-                    //                 fontSize: isSmallScreen ? 11 : 13,
-                    //                 color: Colors.grey[600],
-                    //               ),
-                    //             ),
-                    //           ],
-                    //         ),
-                    //       ),
-                          
-                    //       SizedBox(width: 15),
-                          
-                    //       // Badge Icon
-                    //       Container(
-                    //         width: isSmallScreen ? 60 : 70,
-                    //         height: isSmallScreen ? 60 : 70,
-                    //         decoration: BoxDecoration(
-                    //           gradient: LinearGradient(
-                    //             colors: [Color(0xFFFFB347), Color(0xFFFF9800)],
-                    //             begin: Alignment.topLeft,
-                    //             end: Alignment.bottomRight,
-                    //           ),
-                    //           borderRadius: BorderRadius.circular(16),
-                    //           boxShadow: [
-                    //             BoxShadow(
-                    //               color: Color(0xFFFF9800).withOpacity(0.3),
-                    //               blurRadius: 10,
-                    //               offset: Offset(0, 4),
-                    //             ),
-                    //           ],
-                    //         ),
-                    //         child: Icon(
-                    //           Icons.emoji_events,
-                    //           color: Colors.white,
-                    //           size: isSmallScreen ? 30 : 36,
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-                    
-                    SizedBox(height: 20),
                     
                     // App Info Section
                     Container(
@@ -356,7 +226,7 @@ class ProfilePage extends StatelessWidget {
                         ],
                       ),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'دليلي - طريقك للأوراق الحكومية',
@@ -365,7 +235,7 @@ class ProfilePage extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                               color: Colors.grey[700],
                             ),
-                            textAlign: TextAlign.right,
+                            textAlign: TextAlign.left,
                           ),
                           SizedBox(height: 8),
                           Text(
@@ -374,11 +244,11 @@ class ProfilePage extends StatelessWidget {
                               fontSize: isSmallScreen ? 10 : 12,
                               color: Colors.grey[500],
                             ),
-                            textAlign: TextAlign.right,
+                            textAlign: TextAlign.left,
                           ),
                           SizedBox(height: 12),
                           Wrap(
-                            alignment: WrapAlignment.end,
+                            alignment: WrapAlignment.start,
                             spacing: 4,
                             children: [
                               _buildInfoLink('اتصل بنا', isSmallScreen),
@@ -504,36 +374,6 @@ class ProfilePage extends StatelessWidget {
         ),
         child: Row(
           children: [
-            trailing,
-            
-            Spacer(),
-            
-            Flexible(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: isSmallScreen ? 14 : 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[800],
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: isSmallScreen ? 10 : 12,
-                      color: Colors.grey[500],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            
-            SizedBox(width: 12),
-            
             Container(
               padding: EdgeInsets.all(isSmallScreen ? 8 : 10),
               decoration: BoxDecoration(
@@ -546,6 +386,38 @@ class ProfilePage extends StatelessWidget {
                 size: isSmallScreen ? 20 : 24,
               ),
             ),
+
+            SizedBox(width: 12),
+
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 14 : 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[800],
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 10 : 12,
+                      color: Colors.grey[500],
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                ],
+              ),
+            ),
+
+            Spacer(),
+
+            trailing,
           ],
         ),
       ),
