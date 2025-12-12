@@ -12,9 +12,13 @@ class ServiceBinding extends Bindings {
       CommentsRemoteDataSourceImpl(clientProvider.client),
     );
 
-    Get.lazyPut(() => ServiceController(
-          clientProvider: clientProvider,
-          commentsRepository: commentsRepo,
-        ));
+    // Register eagerly + permanent so Get.find always succeeds, even before any page binding
+    Get.put(
+      ServiceController(
+        clientProvider: clientProvider,
+        commentsRepository: commentsRepo,
+      ),
+      permanent: true,
+    );
   }
 }
