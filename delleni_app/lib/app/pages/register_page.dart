@@ -277,12 +277,13 @@ class RegisterPage extends StatelessWidget {
                                       if (ok) {
                                         Get.snackbar(
                                           'نجح',
-                                          'تم إنشاء الحساب بنجاح',
+                                          'تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول',
                                           backgroundColor: Colors.green.shade100,
                                           colorText: Colors.green.shade900,
+                                          duration: const Duration(seconds: 3),
                                         );
-                                        // Navigate to main app after successful registration
-                                        Get.offAll(() => const MainLayout());
+                                        // Navigate to login page after successful registration
+                                        Get.offAll(() => Login());
                                       } else {
                                         Get.snackbar(
                                           'خطأ',
