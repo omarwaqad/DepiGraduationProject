@@ -11,8 +11,13 @@
   <component name="ChangeListManager">
     <list default="true" id="ee955dd5-b5b5-4658-90e4-d83f0a456dd9" name="Changes" comment="feat(locations): add fetchAllLocations() to ServiceController and update LocationsPage to show all offices&#10;&#10;- Implemented fetchAllLocations() query for locations table&#10;- Updated LocationsPage to load all locations instead of service-specific ones&#10;- Ensured locations observable stays sync across sheets and pages">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/main_layout.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/main_layout.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/society_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/society_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/constants/app_assets.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/constants/app_assets.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/controllers/home_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/controllers/home_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/controllers/service_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/controllers/service_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/controllers/service_controller_locations.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/controllers/service_controller_locations.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/controllers/service_controller_services.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/controllers/service_controller_services.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/home_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/home_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/locations.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/locations.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

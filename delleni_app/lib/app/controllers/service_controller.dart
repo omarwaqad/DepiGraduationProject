@@ -24,46 +24,49 @@ part 'service_controller_locations.dart';
 part 'service_controller_comments.dart';
 
 class ServiceController extends GetxController {
-  ServiceController({SupabaseClientProvider? clientProvider, CommentsRepository? commentsRepository})
-      : supabase = (clientProvider ?? SupabaseClientProvider()).client,
-        commentsRepo = commentsRepository ??
-            CommentsRepositoryImpl(
-              CommentsRemoteDataSourceImpl(
-                (clientProvider ?? SupabaseClientProvider()).client,
-              ),
-            ),
-        fetchCommentsForService = FetchCommentsForService(
-          commentsRepository ??
-              CommentsRepositoryImpl(
-                CommentsRemoteDataSourceImpl(
-                  (clientProvider ?? SupabaseClientProvider()).client,
-                ),
-              ),
-        ),
-        fetchAllCommentsUseCase = FetchAllComments(
-          commentsRepository ??
-              CommentsRepositoryImpl(
-                CommentsRemoteDataSourceImpl(
-                  (clientProvider ?? SupabaseClientProvider()).client,
-                ),
-              ),
-        ),
-        addCommentUseCase = AddComment(
-          commentsRepository ??
-              CommentsRepositoryImpl(
-                CommentsRemoteDataSourceImpl(
-                  (clientProvider ?? SupabaseClientProvider()).client,
-                ),
-              ),
-        ),
-        updateReactionUseCase = UpdateReaction(
-          commentsRepository ??
-              CommentsRepositoryImpl(
-                CommentsRemoteDataSourceImpl(
-                  (clientProvider ?? SupabaseClientProvider()).client,
-                ),
-              ),
-        );
+  ServiceController({
+    SupabaseClientProvider? clientProvider,
+    CommentsRepository? commentsRepository,
+  }) : supabase = (clientProvider ?? SupabaseClientProvider()).client,
+       commentsRepo =
+           commentsRepository ??
+           CommentsRepositoryImpl(
+             CommentsRemoteDataSourceImpl(
+               (clientProvider ?? SupabaseClientProvider()).client,
+             ),
+           ),
+       fetchCommentsForService = FetchCommentsForService(
+         commentsRepository ??
+             CommentsRepositoryImpl(
+               CommentsRemoteDataSourceImpl(
+                 (clientProvider ?? SupabaseClientProvider()).client,
+               ),
+             ),
+       ),
+       fetchAllCommentsUseCase = FetchAllComments(
+         commentsRepository ??
+             CommentsRepositoryImpl(
+               CommentsRemoteDataSourceImpl(
+                 (clientProvider ?? SupabaseClientProvider()).client,
+               ),
+             ),
+       ),
+       addCommentUseCase = AddComment(
+         commentsRepository ??
+             CommentsRepositoryImpl(
+               CommentsRemoteDataSourceImpl(
+                 (clientProvider ?? SupabaseClientProvider()).client,
+               ),
+             ),
+       ),
+       updateReactionUseCase = UpdateReaction(
+         commentsRepository ??
+             CommentsRepositoryImpl(
+               CommentsRemoteDataSourceImpl(
+                 (clientProvider ?? SupabaseClientProvider()).client,
+               ),
+             ),
+       );
   // current device position (nullable)
   final currentPosition = Rxn<Position>();
 
@@ -148,6 +151,10 @@ class ServiceController extends GetxController {
   var isLoading = false.obs;
   var services = <Service>[].obs;
 
+  // Search
+  final RxString searchQuery = ''.obs;
+  List<Service> _servicesCache = [];
+
   // Selected service
   var selectedService = Rxn<Service>();
 
@@ -156,6 +163,8 @@ class ServiceController extends GetxController {
 
   // Locations + comments for the selected service
   var locations = <LocationModel>[].obs;
+  var all_locations = <LocationModel>[].obs;
+
   var comments = <CommentModel>[].obs;
   var isCommentsLoading = false.obs;
 
@@ -170,6 +179,13 @@ class ServiceController extends GetxController {
     super.onInit();
     _initHive();
     fetchServices();
+
+    // Debounce search
+    debounce<String>(
+      searchQuery,
+      (q) => _performSearch(q),
+      time: const Duration(milliseconds: 400),
+    );
   }
 
   // ========================= HIVE INIT =========================

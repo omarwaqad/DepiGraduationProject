@@ -15,6 +15,7 @@ extension ServiceControllerServices on ServiceController {
           .toList();
 
       services.assignAll(list);
+      _servicesCache = List<Service>.from(list);
     } catch (e) {
       // ignore: avoid_print
       print('fetchServices error: $e');
@@ -33,5 +34,53 @@ extension ServiceControllerServices on ServiceController {
       fetchLocationsForSelectedService(),
       fetchCommentsForSelectedService(),
     ]);
+  }
+  // ================= SEARCH =================
+
+  Future<void> _performSearch(String q) async {
+    final query = q.trim();
+
+    if (query.isEmpty) {
+      services.assignAll(_servicesCache);
+      return;
+    }
+    void clearSearch() {
+      searchQuery.value = '';
+      services.assignAll(_servicesCache);
+
+      // Clear the TextField - you'll need to access homeCtrl
+      // Or better yet, pass the TextEditingController here
+    }
+
+    // Try server search
+    try {
+      final res = await supabase
+          .from('services')
+          .select()
+          .ilike('service_name', '%$query%')
+          .order('created_at', ascending: false);
+
+      final data = res as List<dynamic>;
+      final results = data
+          .map((e) => Service.fromMap(Map<String, dynamic>.from(e)))
+          .toList();
+
+      services.assignAll(results);
+      return;
+    } catch (e) {
+      print('Server search failed: $e');
+    }
+
+    // Client fallback
+    final filtered = _servicesCache.where((s) {
+      return s.serviceName.toLowerCase().contains(query.toLowerCase());
+    }).toList();
+
+    services.assignAll(filtered);
+  }
+
+  void clearSearch() {
+    searchQuery.value = '';
+    services.assignAll(_servicesCache);
   }
 }

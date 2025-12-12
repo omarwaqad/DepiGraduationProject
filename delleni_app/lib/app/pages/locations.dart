@@ -22,7 +22,7 @@ class _LocationsPageState extends State<LocationsPage> {
   void initState() {
     super.initState();
     // If locations list is empty, try to fetch (keeps page reusable)
-    if (ctrl.locations.isEmpty) {
+    if (ctrl.all_locations.isEmpty) {
       // This will fetch only for selected service — if you want ALL locations across services,
       // add a controller method that fetches all locations and call it instead.
       ctrl.fetchAllLocations();
@@ -42,7 +42,7 @@ class _LocationsPageState extends State<LocationsPage> {
           elevation: 0,
         ),
         body: Obx(() {
-          final List<LocationModel> list = ctrl.locations;
+          final List<LocationModel> list = ctrl.all_locations;
           if (list.isEmpty) {
             return const Center(
               child: Padding(
@@ -58,7 +58,7 @@ class _LocationsPageState extends State<LocationsPage> {
 
           return RefreshIndicator(
             onRefresh: () async {
-              await ctrl.fetchLocationsForSelectedService();
+              await ctrl.fetchAllLocations();
             },
             child: ListView.separated(
               padding: const EdgeInsets.fromLTRB(12, 12, 12, 24),

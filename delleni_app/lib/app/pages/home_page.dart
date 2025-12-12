@@ -184,21 +184,42 @@ class HomePage extends StatelessWidget {
                 ),
               ],
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: const Row(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
               children: [
-                Icon(Icons.search_rounded, color: Colors.grey, size: 22),
-                SizedBox(width: 8),
+                const Icon(Icons.search_rounded, color: Colors.grey, size: 22),
+                const SizedBox(width: 8),
                 Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      isCollapsed: true,
-                      border: InputBorder.none,
-                      hintText: 'ابحث عن خدمة...',
-                    ),
-                    style: TextStyle(fontSize: 14),
-                    cursorColor: kPrimaryGreen,
-                  ),
+                  child: Obx(() {
+                    return TextField(
+                      controller: homeCtrl.searchController, // ADD THIS
+                      onChanged: (v) => serviceCtrl.searchQuery.value = v,
+                      decoration: InputDecoration(
+                        isCollapsed: true,
+                        border: InputBorder.none,
+                        hintText: 'ابحث عن خدمة...',
+                        suffixIcon: serviceCtrl.searchQuery.value.isEmpty
+                            ? null
+                            : GestureDetector(
+                                onTap: () {
+                                  homeCtrl.searchController
+                                      .clear(); // UPDATE THIS
+                                  serviceCtrl.clearSearch();
+                                },
+                                child: const Padding(
+                                  padding: EdgeInsets.all(10.0),
+                                  child: Icon(
+                                    Icons.close,
+                                    size: 18,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ),
+                      ),
+                      style: const TextStyle(fontSize: 14),
+                      cursorColor: kPrimaryGreen,
+                    );
+                  }),
                 ),
               ],
             ),

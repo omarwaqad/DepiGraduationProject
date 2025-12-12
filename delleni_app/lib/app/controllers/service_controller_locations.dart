@@ -34,7 +34,7 @@ extension ServiceControllerLocations on ServiceController {
       final list = (res as List<dynamic>)
           .map((e) => LocationModel.fromMap(Map<String, dynamic>.from(e)))
           .toList();
-      locations.assignAll(list);
+      all_locations.assignAll(list);
     } catch (e) {
       // ignore: avoid_print
       print('fetchAllLocations error: $e');
