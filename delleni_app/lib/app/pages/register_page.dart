@@ -1,4 +1,5 @@
 import 'package:delleni_app/app/pages/login.dart';
+import 'package:delleni_app/app/pages/main_layout.dart';
 import 'package:delleni_app/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -208,63 +209,107 @@ class RegisterPage extends StatelessWidget {
 
                         SizedBox(
                           height: 48,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFDD755A),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(24),
+                          child: Obx(
+                            () => ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFDD755A),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(24),
+                                ),
                               ),
-                            ),
-                            onPressed: () async {
-                              final firstname = firstNameController.text;
-                              final lastname = lastNameController.text;
-                              final email = emailController.text;
-                              final phonenumber = phoneController.text;
-                              final address = addressController.text;
-                              final password = passwordController.text;
-                              final confirmPassword =
-                                  confirmPasswordController.text;
+                              onPressed: auth.isLoading.value
+                                  ? null
+                                  : () async {
+                                      final firstname = firstNameController.text.trim();
+                                      final lastname = lastNameController.text.trim();
+                                      final email = emailController.text.trim();
+                                      final phonenumber = phoneController.text.trim();
+                                      final address = addressController.text.trim();
+                                      final password = passwordController.text;
+                                      final confirmPassword =
+                                          confirmPasswordController.text;
 
-                              if (password != confirmPassword) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Passwords do not match'),
-                                  ),
-                                );
-                                return;
-                              }
+                                      // Validation
+                                      if (firstname.isEmpty ||
+                                          lastname.isEmpty ||
+                                          email.isEmpty ||
+                                          phonenumber.isEmpty ||
+                                          address.isEmpty ||
+                                          password.isEmpty) {
+                                        Get.snackbar(
+                                          'خطأ',
+                                          'الرجاء ملء جميع الحقول',
+                                          backgroundColor: Colors.red.shade100,
+                                          colorText: Colors.red.shade900,
+                                        );
+                                        return;
+                                      }
 
-                              final (ok, msg) = await auth.register(
-                                firstName: firstname,
-                                lastName: lastname,
-                                email: email,
-                                phone: phonenumber,
-                                address: address,
-                                password: password,
-                              );
+                                      if (password != confirmPassword) {
+                                        Get.snackbar(
+                                          'خطأ',
+                                          'كلمات المرور غير متطابقة',
+                                          backgroundColor: Colors.red.shade100,
+                                          colorText: Colors.red.shade900,
+                                        );
+                                        return;
+                                      }
 
-                              if (ok) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Registration successful'),
-                                  ),
-                                );
-                                Navigator.pop(context);
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(msg ?? 'Registration failed'),
-                                  ),
-                                );
-                              }
-                            },
-                            child: const Text(
-                              'إنشاء الحساب',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
+                                      if (password.length < 6) {
+                                        Get.snackbar(
+                                          'خطأ',
+                                          'كلمة المرور يجب أن تكون 6 أحرف على الأقل',
+                                          backgroundColor: Colors.red.shade100,
+                                          colorText: Colors.red.shade900,
+                                        );
+                                        return;
+                                      }
+
+                                      final (ok, msg) = await auth.register(
+                                        firstName: firstname,
+                                        lastName: lastname,
+                                        email: email,
+                                        phone: phonenumber,
+                                        address: address,
+                                        password: password,
+                                      );
+
+                                      if (ok) {
+                                        Get.snackbar(
+                                          'نجح',
+                                          'تم إنشاء الحساب بنجاح',
+                                          backgroundColor: Colors.green.shade100,
+                                          colorText: Colors.green.shade900,
+                                        );
+                                        // Navigate to main app after successful registration
+                                        Get.offAll(() => const MainLayout());
+                                      } else {
+                                        Get.snackbar(
+                                          'خطأ',
+                                          msg ?? 'فشل إنشاء الحساب',
+                                          backgroundColor: Colors.red.shade100,
+                                          colorText: Colors.red.shade900,
+                                        );
+                                      }
+                                    },
+                              child: auth.isLoading.value
+                                  ? const SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(Colors.white),
+                                      ),
+                                    )
+                                  : const Text(
+                                      'إنشاء الحساب',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white,
+                                      ),
+                                    ),
                             ),
                           ),
                         ),

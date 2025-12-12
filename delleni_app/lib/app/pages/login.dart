@@ -1,5 +1,6 @@
 import 'package:delleni_app/app/pages/main_layout.dart';
 import 'package:delleni_app/app/pages/register_page.dart';
+import 'package:delleni_app/app/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 
 import 'package:delleni_app/features/auth/presentation/controllers/auth_controller.dart';
@@ -204,6 +205,10 @@ class Login extends StatelessWidget {
                                 password,
                               );
                               if (success) {
+                                  // Reset to home tab before navigating
+                                  final homeCtrl = Get.find<HomeController>();
+                                  homeCtrl.resetToHome();
+                                
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text('تم تسجيل الدخول بنجاح'),

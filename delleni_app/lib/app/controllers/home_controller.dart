@@ -7,6 +7,11 @@ class HomeController extends GetxController {
 
   final searchController = TextEditingController(); // Add this
 
+    /// Reset to home tab (useful after login/logout)
+    void resetToHome() {
+      currentIndex.value = 0;
+    }
+
   void onTabChanged(int index) {
     currentIndex.value = index;
   }
