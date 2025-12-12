@@ -292,15 +292,15 @@ class _CommentCard extends StatelessWidget {
 
             return Row(
               children: [
-                InkWell(
-                  onTap: () {
-                    // TODO: open replies UI if you add it later
-                  },
-                  child: const Text(
-                    'رد',
-                    style: TextStyle(fontSize: 13, color: Colors.grey),
-                  ),
-                ),
+                // InkWell(
+                //   onTap: () {
+                //     // TODO: open replies UI if you add it later
+                //   },
+                //   child: const Text(
+                //     'رد',
+                //     style: TextStyle(fontSize: 13, color: Colors.grey),
+                //   ),
+                // ),
                 const SizedBox(width: 16),
                 // Like button
                 InkWell(

@@ -647,16 +647,16 @@ class _SocietyTipCard extends StatelessWidget {
                       ),
                       child: const Row(
                         children: [
-                          Icon(
-                            Icons.reply_outlined,
-                            size: 18,
-                            color: Colors.grey,
-                          ),
-                        SizedBox(width: 6),
-                          Text(
-                            'رد',
-                            style: TextStyle(fontSize: 14, color: Colors.grey),
-                          ),
+                        //   Icon(
+                        //     Icons.reply_outlined,
+                        //     size: 18,
+                        //     color: Colors.grey,
+                        //   ),
+                        // SizedBox(width: 6),
+                        //   Text(
+                        //     'رد',
+                        //     style: TextStyle(fontSize: 14, color: Colors.grey),
+                        //   ),
                         ],
                       ),
                     ),
