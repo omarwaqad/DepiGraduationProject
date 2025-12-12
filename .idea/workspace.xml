@@ -9,10 +9,90 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ee955dd5-b5b5-4658-90e4-d83f0a456dd9" name="Changes" comment="feat(locations): add fetchAllLocations() to ServiceController and update LocationsPage to show all offices&#10;&#10;- Implemented fetchAllLocations() query for locations table&#10;- Updated LocationsPage to load all locations instead of service-specific ones&#10;- Ensured locations observable stays sync across sheets and pages">
+    <list default="true" id="ee955dd5-b5b5-4658-90e4-d83f0a456dd9" name="Changes" comment=".">
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/core/assets/app_assets.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/core/constants/app_constants.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/core/constants/routes.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/core/services/auth_service.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/core/services/location_service.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/core/services/supabase_service.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/core/utils/extenstions.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/core/utils/helpers.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/core/utils/validators.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/data/models/comment_model.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/data/models/location_model.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/data/models/service_model.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/data/models/user_model.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/data/models/user_progress_model.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/data/repositories/auth_repository.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/data/repositories/comment_repository.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/data/repositories/location_repository.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/data/repositories/service_repository.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/data/repositories/user_repository.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/modules/auth/controllers/auth_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/modules/auth/views/login_view.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/modules/auth/views/register_view.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/modules/home/controllers/home_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/modules/home/controllers/service_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/modules/home/views/home_content_view.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/modules/home/views/home_view.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/modules/home/views/service_detail_view.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/modules/locations/controllers/location_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/modules/locations/views/location_sheet_view.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/modules/locations/views/locations_view.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/modules/profile/controllers/profile_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/modules/profile/controllers/settings_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/modules/profile/views/profile_view.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/modules/profile/views/settings_view.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/modules/progress/controllers/progress_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/modules/progress/views/progress_view.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/modules/society/controllers/comments_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/modules/society/controllers/society_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/modules/society/views/comments_view.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/modules/society/views/society_view.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/shared/bindings/main_binding.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/shared/layouts/main_layout.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/shared/widgets/comment_card.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/shared/widgets/custom_button.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/shared/widgets/custom_text_field.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/shared/widgets/empty_state.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/shared/widgets/loading.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/shared/widgets/location_card.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/shared/widgets/progress_card.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/shared/widgets/service_card.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/shared/widgets/settings_item.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/shared/widgets/stat_card.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/shared/widgets/step_card.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/main_layout.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/main_layout.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/society_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/society_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/constants/app_assets.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/controllers/home_controller.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/controllers/profile_controller.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/controllers/service_controller.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/controllers/settings_controller.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/controllers/society_controller.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/models/auth_service.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/models/comments.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/models/location.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/models/service.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/models/services/geolocator.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/models/user_progress.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/models/user_progress.g.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/comments_page.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/entry_page.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/home_content.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/home_page.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/locations.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/locations_sheet.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/login.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/main_layout.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/profile_page.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/register_page.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/service_detail_page.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/settings_page.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/society_page.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/user_progress_screen.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/main.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,6 +128,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
@@ -81,31 +166,35 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Flutter.Run App.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Depi/DepiGraduationProject/delleni_app/lib/app/models/services&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Suggestions&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.17&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;dart.settings&quot;,
-    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Flutter.Run App.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "getx__arch",
+    "ignore.virus.scanning.warn.message": "true",
+    "io.flutter.reload.alreadyRun": "true",
+    "last_opened_file_path": "C:/Depi/DepiGraduationProject/delleni_app/lib/app/modules/society",
+    "project.structure.last.edited": "Suggestions",
+    "project.structure.proportion": "0.17",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "dart.settings",
+    "show.migrate.to.gradle.popup": "false"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Depi\DepiGraduationProject\delleni_app\lib\app\models\services" />
+      <recent name="C:\Depi\DepiGraduationProject\delleni_app\lib\app\modules\society" />
+      <recent name="C:\Depi\DepiGraduationProject\delleni_app\lib\app\modules\progress" />
+      <recent name="C:\Depi\DepiGraduationProject\delleni_app\lib\app\modules\profile" />
+      <recent name="C:\Depi\DepiGraduationProject\delleni_app\lib\app\modules\locations" />
+      <recent name="C:\Depi\DepiGraduationProject\delleni_app\lib\app\modules\home" />
     </key>
   </component>
   <component name="RunManager" selected="Flutter.Run App">
@@ -271,7 +360,23 @@
       <option name="project" value="LOCAL" />
       <updated>1765494420823</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="feat(society): load all comments on open&#10;&#10;- Converted SocietyPage to StatefulWidget&#10;- Call ctrl.fetchAllComments() on init and assign results to ctrl.comments&#10;- Show spinner while initial load runs&#10;&#10;- Implemented fetchAllLocations() query for locations table&#10;- Updated LocationsPage to load all locations instead of service-specific ones&#10;- Ensured locations observable stays sync across sheets and pages">
+      <option name="closed" value="true" />
+      <created>1765512335093</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1765512335094</updated>
+    </task>
+    <task id="LOCAL-00011" summary=".">
+      <option name="closed" value="true" />
+      <created>1765512586205</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1765512586205</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -303,9 +408,10 @@
     <MESSAGE value="feat(service): add location sheet integration to ServiceDetailPage&#10;&#10;- Added onTap support to QuickInfoCard&#10;- Connected &quot;أقرب مكتب / عرض المواقع&quot; to open LocationsSheet&#10;- Added _openLocationsSheet() with permission handling&#10;- Updated imports for locations_sheet.dart&#10;- Cleaned QuickInfoCard to wrap card with InkWell" />
     <MESSAGE value="&quot;feat: restructure navigation with MainLayout for consistent bottom nav&#10;&#10;- Create MainLayout.dart to handle bottom navigation for entire app&#10;- Split HomePage into HomeContent (content only) and MainLayout (navigation)&#10;- Remove bottom navigation from SocietyPage and UserProgressScreen&#10;- Update main.dart to use MainLayout after login&#10;- Simplify page structure: Login → MainLayout → All pages with persistent nav" />
     <MESSAGE value="feat(society): add SocietyPage community screen synced with comments&#10;&#10;- Implemented SocietyPage UI (stats, contributors, community tips)&#10;- Synced comment list with ServiceController.comments&#10;- Added like interactions and time-ago formatting&#10;- Removed replies logic (not used in current model)&#10;- Prepared page for integration with bottom navigation (&quot;المجتمع&quot;)" />
-    <MESSAGE value="." />
     <MESSAGE value="feat(locations): add fetchAllLocations() to ServiceController and update LocationsPage to show all offices&#10;&#10;- Implemented fetchAllLocations() query for locations table&#10;- Updated LocationsPage to load all locations instead of service-specific ones&#10;- Ensured locations observable stays sync across sheets and pages" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat(locations): add fetchAllLocations() to ServiceController and update LocationsPage to show all offices&#10;&#10;- Implemented fetchAllLocations() query for locations table&#10;- Updated LocationsPage to load all locations instead of service-specific ones&#10;- Ensured locations observable stays sync across sheets and pages" />
+    <MESSAGE value="feat(society): load all comments on open&#10;&#10;- Converted SocietyPage to StatefulWidget&#10;- Call ctrl.fetchAllComments() on init and assign results to ctrl.comments&#10;- Show spinner while initial load runs&#10;&#10;- Implemented fetchAllLocations() query for locations table&#10;- Updated LocationsPage to load all locations instead of service-specific ones&#10;- Ensured locations observable stays sync across sheets and pages" />
+    <MESSAGE value="." />
+    <option name="LAST_COMMIT_MESSAGE" value="." />
   </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">

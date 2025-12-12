@@ -1,60 +1,53 @@
-// lib/main.dart - Updated
-import 'package:delleni_app/app/controllers/home_controller.dart';
-import 'package:delleni_app/app/controllers/service_controller.dart';
-import 'package:delleni_app/app/models/user_progress.dart';
-import 'package:delleni_app/app/pages/login.dart';
-import 'package:delleni_app/app/pages/main_layout.dart';
+import 'package:delleni_app/app/modules/home/controllers/home_controller.dart';
+import 'package:delleni_app/app/modules/home/controllers/service_controller.dart';
+import 'package:delleni_app/app/modules/home/views/home_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:delleni_app/app/modules/auth/views/login_view.dart';
+import 'package:delleni_app/app/data/models/user_progress_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Hive
-  await Hive.initFlutter();
-  Hive.registerAdapter(UserProgressAdapter());
+  Get.put(ServiceController()); // <-- ADD THIS
+  Get.put(HomeController());
 
-  const url = 'https://zfrllrwqndzgfwbtnokl.supabase.co';
-  const anonKey =
+  // 1. Initialize Hive with Flutter
+  await Hive.initFlutter();
+
+  // Register Hive adapters
+  Hive.registerAdapter(UserProgressModelAdapter());
+
+  // 2. Initialize Supabase FIRST
+  const supabaseUrl = 'https://zfrllrwqndzgfwbtnokl.supabase.co';
+  const supabaseAnonKey =
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpmcmxscndxbmR6Z2Z3YnRub2tsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxMDg3MjgsImV4cCI6MjA3OTY4NDcyOH0.gXvK2t3X_bUtd9EU9NjViSxcu6Whab5jq1lGUvus3sU';
 
-  await Supabase.initialize(url: url, anonKey: anonKey);
-
-  // Register GetX controllers
-  Get.put(ServiceController());
-  Get.put(HomeController()); // Add HomeController here
-
-  runApp(Delleni());
+  await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
+  runApp(DelleniApp());
 }
 
-final global = Supabase.instance.client;
-
-class Delleni extends StatelessWidget {
-  Delleni({super.key});
+class DelleniApp extends StatelessWidget {
+  DelleniApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final green = Colors.green.shade700;
-
     return GetMaterialApp(
-      title: "Delleni",
+      title: "دليلي",
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primaryColor: green,
+        primaryColor: Colors.green.shade700,
         scaffoldBackgroundColor: Colors.white,
-        colorScheme: ColorScheme.fromSeed(seedColor: green),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green.shade700),
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.white,
           foregroundColor: Colors.black,
         ),
       ),
-      home: Login(),
-      getPages: [
-        GetPage(name: '/main', page: () => MainLayout()),
-        // Add other routes as needed
-      ],
+      home: HomeView(),
+      // Initialize controllers lazily when needed
     );
   }
 }
