@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 import 'package:delleni_app/main.dart';
+import 'package:delleni_app/app/pages/login.dart';
+import 'package:delleni_app/app/controllers/service_controller.dart';
 
 class ProfileController extends GetxController {
   // Observable variables for user info
@@ -83,32 +85,50 @@ class ProfileController extends GetxController {
   /// Load user statistics (contributions, completed items, active requests)
   Future<void> loadUserStatistics(String userId) async {
     try {
-      // Fetch contributions count
-      final contributionsResponse =
-          await global.from('contributions').select().eq('user_id', userId);
-      contributionsCount.value = (contributionsResponse as List).length;
+      // Get ServiceController to access services and progressBox
+      if (!Get.isRegistered<ServiceController>()) {
+        contributionsCount.value = 0;
+        completedCount.value = 0;
+        activeRequestsCount.value = 0;
+        favoriteServicesCount.value = 0;
+        return;
+      }
+      
+      final serviceController = Get.find<ServiceController>();
+      
+      int totalServices = 0;
+      int completedServices = 0;
+      int inProgressServices = 0;
 
-      // Fetch completed items count
-      final completedResponse = await global
-          .from('user_services')
-          .select()
-          .eq('user_id', userId)
-          .eq('status', 'completed');
-      completedCount.value = (completedResponse as List).length;
+      // Calculate from Hive progressBox like user_progress_screen
+      for (var service in serviceController.services) {
+        final key = '${userId}_${service.id}';
+        final progress = serviceController.progressBox.get(key);
+        if (progress != null && progress.stepsCompleted.any((step) => step)) {
+          totalServices++;
+          int completed = progress.stepsCompleted.where((s) => s).length;
+          int total = service.steps.length;
+          if (completed == total && total > 0) {
+            completedServices++;
+          } else if (completed > 0) {
+            inProgressServices++;
+          }
+        }
+      }
 
-      // Fetch active requests count
-      final activeResponse = await global
-          .from('user_services')
-          .select()
-          .eq('user_id', userId)
-          .neq('status', 'completed')
-          .neq('status', 'cancelled');
-      activeRequestsCount.value = (activeResponse as List).length;
+      // Set statistics
+      contributionsCount.value = totalServices;
+      completedCount.value = completedServices;
+      activeRequestsCount.value = inProgressServices;
 
-      // Fetch favorite services count
-      final favoritesResponse =
-          await global.from('favorites').select().eq('user_id', userId);
-      favoriteServicesCount.value = (favoritesResponse as List).length;
+      // Fetch favorite services count from database
+      try {
+        final favoritesResponse =
+            await global.from('favorites').select().eq('user_id', userId);
+        favoriteServicesCount.value = (favoritesResponse as List).length;
+      } catch (e) {
+        favoriteServicesCount.value = 0;
+      }
     } catch (e) {
       print('Error loading user statistics: $e');
       // Default to 0 counts on error
@@ -142,7 +162,7 @@ class ProfileController extends GetxController {
   Future<void> logout() async {
     try {
       await global.auth.signOut();
-      Get.offAllNamed('/login');
+      Get.offAll(() => Login());
     } catch (e) {
       print('Error during logout: $e');
       Get.snackbar(

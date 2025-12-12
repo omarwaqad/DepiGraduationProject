@@ -7,13 +7,54 @@ import 'package:delleni_app/app/models/comments.dart';
 const Color kPrimaryGreen = Color(0xFF219A6D);
 const Color kBackgroundGrey = Color(0xFFF5F5F5);
 
-class SocietyPage extends StatelessWidget {
+class SocietyPage extends StatefulWidget {
   const SocietyPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final ServiceController ctrl = Get.find<ServiceController>();
+  State<SocietyPage> createState() => _SocietyPageState();
+}
 
+class _SocietyPageState extends State<SocietyPage> {
+  final ServiceController ctrl = Get.find<ServiceController>();
+  bool _isInitialLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAllCommentsOnOpen();
+  }
+
+  Future<void> _loadAllCommentsOnOpen() async {
+    try {
+      setState(() => _isInitialLoading = true);
+
+      // call your controller method that fetches ALL comments from server + local fallback
+      final List<CommentModel> all = await ctrl.fetchAllComments();
+
+      // push results into the controller observable so the UI (and other pages) use the same source of truth
+      // if ctrl.comments is an RxList, assignAll will work; otherwise fallback to setting value.
+      try {
+        // prefer assignAll for RxList
+        ctrl.comments.assignAll(all);
+      } catch (_) {
+        // fallback if comments is simple List inside an Rx wrapper
+        try {
+          ctrl.comments.value = all;
+        } catch (_) {
+          // last resort: replace underlying variable via reflection-like approach (shouldn't be needed)
+        }
+      }
+    } catch (e) {
+      // silent fail — keep UI functional and show a toast
+      Get.snackbar('خطأ', 'فشل تحميل المشاركات، تحقق من الاتصال.');
+      print('_loadAllCommentsOnOpen error: $e');
+    } finally {
+      if (mounted) setState(() => _isInitialLoading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
@@ -24,178 +65,190 @@ class SocietyPage extends StatelessWidget {
               _HeaderArea(),
               const SizedBox(height: 12),
               Expanded(
-                child: Obx(() {
-                  // Get all comments grouped by service
-                  final allComments = _getAllCommentsGroupedByService(ctrl);
+                child: _isInitialLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : Obx(() {
+                        // Get all comments grouped by service
+                        final allComments = _getAllCommentsGroupedByService(
+                          ctrl,
+                        );
 
-                  // Calculate totals
-                  int totalComments = 0;
-                  int totalLikes = 0;
-                  for (final entry in allComments) {
-                    final comments = entry['comments'] as List<CommentModel>;
-                    totalComments += comments.length;
-                    for (final comment in comments) {
-                      totalLikes += comment.likes ?? 0;
-                    }
-                  }
+                        // Calculate totals
+                        int totalComments = 0;
+                        int totalLikes = 0;
+                        for (final entry in allComments) {
+                          final comments =
+                              entry['comments'] as List<CommentModel>;
+                          totalComments += comments.length;
+                          for (final comment in comments) {
+                            totalLikes += comment.likes ?? 0;
+                          }
+                        }
 
-                  // Flatten all comments for contributor calculation
-                  final List<CommentModel> allCommentsList = [];
-                  for (final entry in allComments) {
-                    final comments = entry['comments'] as List<CommentModel>;
-                    allCommentsList.addAll(comments);
-                  }
+                        // Flatten all comments for contributor calculation
+                        final List<CommentModel> allCommentsList = [];
+                        for (final entry in allComments) {
+                          final comments =
+                              entry['comments'] as List<CommentModel>;
+                          allCommentsList.addAll(comments);
+                        }
 
-                  final contributors = _topContributors(
-                    allCommentsList,
-                    limit: 5,
-                  );
+                        final contributors = _topContributors(
+                          allCommentsList,
+                          limit: 5,
+                        );
 
-                  return SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _StatsCard(
-                          totalContributors: contributors.length,
-                          totalTips: totalComments,
-                          totalLikes: totalLikes,
-                        ),
-                        const SizedBox(height: 14),
+                        return SingleChildScrollView(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _StatsCard(
+                                totalContributors: contributors.length,
+                                totalTips: totalComments,
+                                totalLikes: totalLikes,
+                              ),
+                              const SizedBox(height: 14),
 
-                        // Most active contributors
-                        const Text(
-                          'أكثر المساهمين نشاطًا',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
+                              // Most active contributors
+                              const Text(
+                                'أكثر المساهمين نشاطًا',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              if (contributors.isEmpty)
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: const Text('لا يوجد مساهمين بعد'),
+                                )
+                              else
+                                SizedBox(
+                                  height: 60,
+                                  child: ListView.separated(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: contributors.length,
+                                    separatorBuilder: (_, __) =>
+                                        const SizedBox(width: 8),
+                                    itemBuilder: (context, i) {
+                                      final item = contributors[i];
+                                      return _ContributorChip(
+                                        name: item.key,
+                                        count: item.value,
+                                      );
+                                    },
+                                  ),
+                                ),
+
+                              const SizedBox(height: 18),
+
+                              // Tips feed (all comments from all services)
+                              const Text(
+                                'نصائح وتجارب المستخدمين من جميع الخدمات',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+
+                              // Display comments grouped by service
+                              if (allComments.isEmpty)
+                                Container(
+                                  padding: const EdgeInsets.all(20),
+                                  margin: const EdgeInsets.symmetric(
+                                    vertical: 20,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Icon(
+                                        Icons.forum_outlined,
+                                        size: 64,
+                                        color: Colors.grey[300],
+                                      ),
+                                      const SizedBox(height: 12),
+                                      const Text(
+                                        'لا توجد نصائح بعد',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      const Text(
+                                        'كن أول من يشارك تجربته مع المجتمع',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.grey,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              else
+                                ...allComments.map((serviceEntry) {
+                                  final serviceName =
+                                      serviceEntry['serviceName'] as String;
+                                  final serviceComments =
+                                      serviceEntry['comments']
+                                          as List<CommentModel>;
+
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // Service header
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          bottom: 8,
+                                          top: 4,
+                                        ),
+                                        child: Text(
+                                          'خدمة: $serviceName',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                            color: kPrimaryGreen,
+                                          ),
+                                        ),
+                                      ),
+
+                                      // Comments for this service
+                                      ...serviceComments.map(
+                                        (c) => Padding(
+                                          padding: const EdgeInsets.only(
+                                            bottom: 10,
+                                          ),
+                                          child: _SocietyTipCard(
+                                            comment: c,
+                                            serviceName: serviceName,
+                                            onLike: () => ctrl.likeComment(c),
+                                          ),
+                                        ),
+                                      ),
+
+                                      const SizedBox(height: 16),
+                                    ],
+                                  );
+                                }),
+
+                              const SizedBox(height: 80),
+                            ],
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        if (contributors.isEmpty)
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Text('لا يوجد مساهمين بعد'),
-                          )
-                        else
-                          SizedBox(
-                            height: 60,
-                            child: ListView.separated(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: contributors.length,
-                              separatorBuilder: (_, __) =>
-                                  const SizedBox(width: 8),
-                              itemBuilder: (context, i) {
-                                final item = contributors[i];
-                                return _ContributorChip(
-                                  name: item.key,
-                                  count: item.value,
-                                );
-                              },
-                            ),
-                          ),
-
-                        const SizedBox(height: 18),
-
-                        // Tips feed (all comments from all services)
-                        const Text(
-                          'نصائح وتجارب المستخدمين من جميع الخدمات',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-
-                        // Display comments grouped by service
-                        if (allComments.isEmpty)
-                          Container(
-                            padding: const EdgeInsets.all(20),
-                            margin: const EdgeInsets.symmetric(vertical: 20),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.forum_outlined,
-                                  size: 64,
-                                  color: Colors.grey[300],
-                                ),
-                                const SizedBox(height: 12),
-                                const Text(
-                                  'لا توجد نصائح بعد',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                const Text(
-                                  'كن أول من يشارك تجربته مع المجتمع',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ),
-                          )
-                        else
-                          ...allComments.map((serviceEntry) {
-                            final serviceName =
-                                serviceEntry['serviceName'] as String;
-                            final serviceComments =
-                                serviceEntry['comments'] as List<CommentModel>;
-
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Service header
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    bottom: 8,
-                                    top: 4,
-                                  ),
-                                  child: Text(
-                                    'خدمة: $serviceName',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: kPrimaryGreen,
-                                    ),
-                                  ),
-                                ),
-
-                                // Comments for this service
-                                ...serviceComments.map(
-                                  (c) => Padding(
-                                    padding: const EdgeInsets.only(bottom: 10),
-                                    child: _SocietyTipCard(
-                                      comment: c,
-                                      serviceName: serviceName,
-                                      onLike: () => ctrl.likeComment(c),
-                                    ),
-                                  ),
-                                ),
-
-                                const SizedBox(height: 16),
-                              ],
-                            );
-                          }),
-
-                        const SizedBox(height: 80),
-                      ],
-                    ),
-                  );
-                }),
+                        );
+                      }),
               ),
             ],
           ),
@@ -540,9 +593,10 @@ class _SocietyTipCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 16),
+                // reply button placeholder (does nothing currently)
                 InkWell(
                   onTap: () {
-                    // TODO: Implement reply functionality
+                    // no replies implemented
                   },
                   borderRadius: BorderRadius.circular(20),
                   child: Container(
