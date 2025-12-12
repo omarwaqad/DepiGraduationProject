@@ -34,30 +34,33 @@ class AuthService {
     }
   }
 
-  Future<bool> login(String email, String password) async {
+  Future<(bool success, String? message)> login(String email, String password) async {
     try {
       final response = await global.auth.signInWithPassword(
-        email: email,
-        password: password,
+        email: email.trim(),
+        password: password.trim(),
       );
       if (response.user != null) {
-        return true;
+        return (true, null);
       } else {
-        return false;
+        return (false, 'تعذر تسجيل الدخول');
       }
     } catch (e) {
-      print('Error during login: $e');
-      return false;
+      // Provide clearer error to UI
+      final msg = e.toString();
+      print('Error during login: $msg');
+      return (false, msg);
     }
   }
 
-  Future<bool> logout() async {
+  Future<(bool success, String? message)> logout() async {
     try {
-      final response = await global.auth.signOut();
-      return true;
+      await global.auth.signOut();
+      return (true, null);
     } catch (e) {
-      print('Error during logout: $e');
-      return false;
+      final msg = e.toString();
+      print('Error during logout: $msg');
+      return (false, msg);
     }
   }
 

@@ -103,6 +103,9 @@ class ServiceController extends GetxController {
   // Local fallback comments map per service id (if server insert fails)
   final Map<String, List<CommentModel>> localCommentFallback = {};
 
+  // Track user reactions: commentId -> 'like' or 'dislike' or null
+  final userReactions = <String, String?>{}.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -388,16 +391,79 @@ class ServiceController extends GetxController {
     }
   }
 
+  /// Like a comment - user can only like OR dislike once
   Future<void> likeComment(CommentModel c) async {
-    // optimistic local increment
-    c.likes++;
+    final currentReaction = userReactions[c.id];
+
+    // If already liked, remove the like
+    if (currentReaction == 'like') {
+      c.likes--;
+      userReactions[c.id] = null;
+    }
+    // If disliked, switch to like
+    else if (currentReaction == 'dislike') {
+      c.dislikes--;
+      c.likes++;
+      userReactions[c.id] = 'like';
+    }
+    // If no reaction, add like
+    else {
+      c.likes++;
+      userReactions[c.id] = 'like';
+    }
+
     comments.refresh();
 
+    // Update on server
     try {
-      await supabase.from('comments').update({'likes': c.likes}).eq('id', c.id);
+      await supabase.from('comments').update({
+        'likes': c.likes,
+        'dislikes': c.dislikes,
+      }).eq('id', c.id);
     } catch (e) {
       // ignore: avoid_print
-      print('Failed to update likes on server: $e — keeping locally');
+      print('Failed to update reaction on server: $e — keeping locally');
     }
   }
+
+  /// Dislike a comment - user can only like OR dislike once
+  Future<void> dislikeComment(CommentModel c) async {
+    final currentReaction = userReactions[c.id];
+
+    // If already disliked, remove the dislike
+    if (currentReaction == 'dislike') {
+      c.dislikes--;
+      userReactions[c.id] = null;
+    }
+    // If liked, switch to dislike
+    else if (currentReaction == 'like') {
+      c.likes--;
+      c.dislikes++;
+      userReactions[c.id] = 'dislike';
+    }
+    // If no reaction, add dislike
+    else {
+      c.dislikes++;
+      userReactions[c.id] = 'dislike';
+    }
+
+    comments.refresh();
+
+    // Update on server
+    try {
+      await supabase.from('comments').update({
+        'likes': c.likes,
+        'dislikes': c.dislikes,
+      }).eq('id', c.id);
+    } catch (e) {
+      // ignore: avoid_print
+      print('Failed to update reaction on server: $e — keeping locally');
+    }
+  }
+
+  /// Check if user has liked a comment
+  bool hasLiked(String commentId) => userReactions[commentId] == 'like';
+
+  /// Check if user has disliked a comment
+  bool hasDisliked(String commentId) => userReactions[commentId] == 'dislike';
 }

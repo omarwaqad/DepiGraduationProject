@@ -199,7 +199,7 @@ class Login extends StatelessWidget {
                             onPressed: () async {
                               final email = emailController.text;
                               final password = passwordController.text;
-                              final success = await service.login(
+                              final (success, message) = await service.login(
                                 email,
                                 password,
                               );
@@ -215,7 +215,7 @@ class Login extends StatelessWidget {
                                 ); // Instead of HomePage()
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Login failed')),
+                                  SnackBar(content: Text(message ?? 'Login failed')),
                                 );
                               }
                             },

@@ -212,6 +212,7 @@ class _CommentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ServiceController ctrl = Get.find<ServiceController>();
     final String timeAgoStr = _timeAgoArabic(comment.createdAt);
 
     return Container(
@@ -284,38 +285,77 @@ class _CommentCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          // Actions row
-          Row(
-            children: [
-              InkWell(
-                onTap: () {
-                  // TODO: open replies UI if you add it later
-                },
-                child: const Text(
-                  'رد',
-                  style: TextStyle(fontSize: 13, color: Colors.grey),
+          // Actions row with like and dislike
+          Obx(() {
+            final hasLiked = ctrl.hasLiked(comment.id);
+            final hasDisliked = ctrl.hasDisliked(comment.id);
+
+            return Row(
+              children: [
+                InkWell(
+                  onTap: () {
+                    // TODO: open replies UI if you add it later
+                  },
+                  child: const Text(
+                    'رد',
+                    style: TextStyle(fontSize: 13, color: Colors.grey),
+                  ),
                 ),
-              ),
-              const SizedBox(width: 16),
-              InkWell(
-                onTap: onLike,
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.thumb_up_alt_outlined,
-                      size: 16,
-                      color: Colors.grey,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      comment.likes.toString(),
-                      style: const TextStyle(fontSize: 13, color: Colors.grey),
-                    ),
-                  ],
+                const SizedBox(width: 16),
+                // Like button
+                InkWell(
+                  onTap: onLike,
+                  child: Row(
+                    children: [
+                      Icon(
+                        hasLiked
+                            ? Icons.thumb_up_alt
+                            : Icons.thumb_up_alt_outlined,
+                        size: 16,
+                        color: hasLiked ? kPrimaryGreen : Colors.grey,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        comment.likes.toString(),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: hasLiked ? kPrimaryGreen : Colors.grey,
+                          fontWeight:
+                              hasLiked ? FontWeight.w600 : FontWeight.normal,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
+                const SizedBox(width: 16),
+                // Dislike button
+                InkWell(
+                  onTap: () => ctrl.dislikeComment(comment),
+                  child: Row(
+                    children: [
+                      Icon(
+                        hasDisliked
+                            ? Icons.thumb_down_alt
+                            : Icons.thumb_down_alt_outlined,
+                        size: 16,
+                        color: hasDisliked ? Colors.red : Colors.grey,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        comment.dislikes.toString(),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: hasDisliked ? Colors.red : Colors.grey,
+                          fontWeight:
+                              hasDisliked ? FontWeight.w600 : FontWeight.normal,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          }),
         ],
       ),
     );

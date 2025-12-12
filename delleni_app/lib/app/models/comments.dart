@@ -5,6 +5,7 @@ class CommentModel {
   final String username;
   final String content;
   int likes;
+  int dislikes;
   final DateTime? createdAt;
 
   CommentModel({
@@ -13,6 +14,7 @@ class CommentModel {
     required this.username,
     required this.content,
     required this.likes,
+    this.dislikes = 0,
     this.createdAt,
   });
 
@@ -23,6 +25,7 @@ class CommentModel {
       username: m['username'] ?? 'Anonymous',
       content: m['content'] ?? '',
       likes: m['likes'] ?? 0,
+      dislikes: m['dislikes'] ?? 0,
       createdAt: m['created_at'] != null ? DateTime.tryParse(m['created_at']) : null,
     );
   }
@@ -32,5 +35,6 @@ class CommentModel {
         'username': username,
         'content': content,
         'likes': likes,
+        'dislikes': dislikes,
       };
 }

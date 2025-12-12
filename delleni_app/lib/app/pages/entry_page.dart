@@ -13,10 +13,8 @@ class EntryPage extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () async {
-              final result = await AuthService().logout();
-              if (result) {
-                Get.off(Login());
-              }
+              await AuthService().logout();
+              Get.off(Login());
             },
             icon: const Icon(Icons.logout),
           ),

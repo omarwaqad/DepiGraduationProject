@@ -73,15 +73,17 @@ class _SocietyPageState extends State<SocietyPage> {
                           ctrl,
                         );
 
-                        // Calculate totals
+                        // Calculate totals (unique comments by id to avoid double-counting)
                         int totalComments = 0;
                         int totalLikes = 0;
+                        final seenIds = <String>{};
                         for (final entry in allComments) {
-                          final comments =
-                              entry['comments'] as List<CommentModel>;
-                          totalComments += comments.length;
+                          final comments = entry['comments'] as List<CommentModel>;
                           for (final comment in comments) {
-                            totalLikes += comment.likes ?? 0;
+                            if (seenIds.add(comment.id)) {
+                              totalComments += 1;
+                              totalLikes += comment.likes;
+                            }
                           }
                         }
 
@@ -481,6 +483,7 @@ class _SocietyTipCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ServiceController ctrl = Get.find<ServiceController>();
     final timeAgoStr = _timeAgoArabic(comment.createdAt);
 
     return Material(
@@ -557,71 +560,110 @@ class _SocietyTipCard extends StatelessWidget {
               style: const TextStyle(fontSize: 13, height: 1.45),
             ),
             const SizedBox(height: 12),
-            // actions row (only likes; no replies)
-            Row(
-              children: [
-                InkWell(
-                  onTap: onLike,
-                  borderRadius: BorderRadius.circular(20),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.thumb_up_alt_outlined,
-                          size: 18,
-                          color: (comment.likes ?? 0) > 0
-                              ? kPrimaryGreen
-                              : Colors.grey,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          '${comment.likes ?? 0}',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: (comment.likes ?? 0) > 0
-                                ? kPrimaryGreen
-                                : Colors.grey,
-                            fontWeight: FontWeight.w500,
+            // actions row: like and dislike buttons
+            Obx(() {
+              final hasLiked = ctrl.hasLiked(comment.id);
+              final hasDisliked = ctrl.hasDisliked(comment.id);
+
+              return Row(
+                children: [
+                  // Like button
+                  InkWell(
+                    onTap: onLike,
+                    borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            hasLiked
+                                ? Icons.thumb_up_alt
+                                : Icons.thumb_up_alt_outlined,
+                            size: 18,
+                            color: hasLiked ? kPrimaryGreen : Colors.grey,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 6),
+                          Text(
+                            '${comment.likes}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: hasLiked ? kPrimaryGreen : Colors.grey,
+                              fontWeight:
+                                  hasLiked ? FontWeight.w600 : FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                // reply button placeholder (does nothing currently)
-                InkWell(
-                  onTap: () {
-                    // no replies implemented
-                  },
-                  borderRadius: BorderRadius.circular(20),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
+                  const SizedBox(width: 8),
+                  // Dislike button
+                  InkWell(
+                    onTap: () => ctrl.dislikeComment(comment),
+                    borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            hasDisliked
+                                ? Icons.thumb_down_alt
+                                : Icons.thumb_down_alt_outlined,
+                            size: 18,
+                            color: hasDisliked ? Colors.red : Colors.grey,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            '${comment.dislikes}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: hasDisliked ? Colors.red : Colors.grey,
+                              fontWeight: hasDisliked
+                                  ? FontWeight.w600
+                                  : FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    child: const Row(
-                      children: [
-                        Icon(
-                          Icons.reply_outlined,
-                          size: 18,
-                          color: Colors.grey,
-                        ),
+                  ),
+                  const SizedBox(width: 16),
+                  // reply button placeholder (does nothing currently)
+                  InkWell(
+                    onTap: () {
+                      // no replies implemented
+                    },
+                    borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      child: const Row(
+                        children: [
+                          Icon(
+                            Icons.reply_outlined,
+                            size: 18,
+                            color: Colors.grey,
+                          ),
                         SizedBox(width: 6),
-                        Text(
-                          'رد',
-                          style: TextStyle(fontSize: 14, color: Colors.grey),
-                        ),
-                      ],
+                          Text(
+                            'رد',
+                            style: TextStyle(fontSize: 14, color: Colors.grey),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              );
+            }),
           ],
         ),
       ),
