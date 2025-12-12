@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:delleni_app/app/controllers/service_controller.dart';
+import 'package:delleni_app/app/controllers/society_controller.dart';
 import 'package:delleni_app/app/models/comments.dart';
 
 const Color kPrimaryGreen = Color(0xFF219A6D);
@@ -12,7 +13,8 @@ class SocietyPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ServiceController ctrl = Get.find<ServiceController>();
+    final societyCtrl = Get.put(SocietyController());
+    final ServiceController serviceCtrl = Get.find<ServiceController>();
 
     return Directionality(
       textDirection: TextDirection.rtl,
@@ -25,31 +27,26 @@ class SocietyPage extends StatelessWidget {
               const SizedBox(height: 12),
               Expanded(
                 child: Obx(() {
+                  if (societyCtrl.isLoadingComments.value) {
+                    return Center(
+                      child: CircularProgressIndicator(
+                        color: kPrimaryGreen,
+                      ),
+                    );
+                  }
+
                   // Get all comments grouped by service
-                  final allComments = _getAllCommentsGroupedByService(ctrl);
+                  final allComments = societyCtrl.getCommentsGroupedByService(serviceCtrl);
 
                   // Calculate totals
                   int totalComments = 0;
-                  int totalLikes = 0;
+                  int totalLikes = societyCtrl.getTotalLikes();
                   for (final entry in allComments) {
                     final comments = entry['comments'] as List<CommentModel>;
                     totalComments += comments.length;
-                    for (final comment in comments) {
-                      totalLikes += comment.likes ?? 0;
-                    }
                   }
 
-                  // Flatten all comments for contributor calculation
-                  final List<CommentModel> allCommentsList = [];
-                  for (final entry in allComments) {
-                    final comments = entry['comments'] as List<CommentModel>;
-                    allCommentsList.addAll(comments);
-                  }
-
-                  final contributors = _topContributors(
-                    allCommentsList,
-                    limit: 5,
-                  );
+                  final contributors = societyCtrl.getTopContributors(limit: 5);
 
                   return SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -181,7 +178,7 @@ class SocietyPage extends StatelessWidget {
                                     child: _SocietyTipCard(
                                       comment: c,
                                       serviceName: serviceName,
-                                      onLike: () => ctrl.likeComment(c),
+                                      onLike: () => serviceCtrl.likeComment(c),
                                     ),
                                   ),
                                 ),
@@ -202,73 +199,6 @@ class SocietyPage extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  // Helper method to get all comments grouped by service
-  List<Map<String, dynamic>> _getAllCommentsGroupedByService(
-    ServiceController ctrl,
-  ) {
-    final result = <Map<String, dynamic>>[];
-
-    // For each service, get its comments
-    for (final service in ctrl.services) {
-      final List<CommentModel> serviceComments = [];
-
-      // Add server comments for this service
-      final serverComments = ctrl.comments
-          .where((c) => c.serviceId == service.id)
-          .toList();
-      serviceComments.addAll(serverComments);
-
-      // Add local fallback comments for this service
-      final localComments = ctrl.localCommentFallback[service.id] ?? [];
-      serviceComments.addAll(localComments);
-
-      // Sort by date (newest first)
-      serviceComments.sort(
-        (a, b) =>
-            (b.createdAt ?? DateTime(0)).compareTo(a.createdAt ?? DateTime(0)),
-      );
-
-      if (serviceComments.isNotEmpty) {
-        result.add({
-          'serviceId': service.id,
-          'serviceName': service.serviceName,
-          'comments': serviceComments,
-        });
-      }
-    }
-
-    // Sort services by most recent comment
-    result.sort((a, b) {
-      final aComments = a['comments'] as List<CommentModel>;
-      final bComments = b['comments'] as List<CommentModel>;
-
-      if (aComments.isEmpty && bComments.isEmpty) return 0;
-      if (aComments.isEmpty) return 1;
-      if (bComments.isEmpty) return -1;
-
-      final aLatest = aComments.first.createdAt ?? DateTime(0);
-      final bLatest = bComments.first.createdAt ?? DateTime(0);
-
-      return bLatest.compareTo(aLatest);
-    });
-
-    return result;
-  }
-
-  static List<MapEntry<String, int>> _topContributors(
-    List<CommentModel> comments, {
-    int limit = 5,
-  }) {
-    final Map<String, int> counts = {};
-    for (final c in comments) {
-      final name = (c.username ?? 'غير معروف');
-      counts[name] = (counts[name] ?? 0) + 1;
-    }
-    final entries = counts.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
-    return entries.take(limit).toList();
   }
 }
 
