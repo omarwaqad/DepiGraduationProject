@@ -4,16 +4,17 @@ A comprehensive Flutter application that serves as a guide for government papers
 
 ## 📋 Project Overview
 
-Delleni is a multi-platform Flutter application designed to provide users with a centralized guide to government papers and official documents. The app supports multiple platforms including Android, iOS, Web, Windows, Linux, and macOS.
+Delleni is a multi-platform Flutter application that guides users through government services. It centralizes required papers, procedural steps, nearby offices, and community advice, running on Android, iOS, Web, Windows, Linux, and macOS.
 
 ## 🚀 Features
 
-- **Cross-Platform Support**: Runs on Android, iOS, Web, Windows, Linux, and macOS
-- **Geolocation Services**: Integrated location-based features using geolocator and geocoding
-- **Local Storage**: Persistent data storage with Hive and SharedPreferences
-- **Real-time Sync**: Backend integration with Supabase
-- **URL Handling**: Integrated support for opening external links
-- **Localization**: Multi-language support with intl package
+- **Service Guides**: Required papers and step-by-step checklists with per-user progress saved in Hive.
+- **Community Tips**: Commenting, likes/dislikes, and aggregated discussions per service via Supabase.
+- **Locations & Directions**: Office listings per service, distance hints, and external map directions using geolocator/url_launcher.
+- **Searchable Catalog**: Service list is searchable and kept in sync from Supabase.
+- **Cross-Platform Support**: Android, iOS, Web, Windows, Linux, macOS.
+- **Real-time Sync**: Supabase-backed data for services, locations, and comments.
+- **Local Storage**: Hive for offline-ready progress tracking; SharedPreferences for lightweight settings.
 
 ## 🛠️ Tech Stack
 
@@ -23,6 +24,13 @@ Delleni is a multi-platform Flutter application designed to provide users with a
 - **Local Storage**: Hive 2.2.3, SharedPreferences 2.5.3
 - **Location Services**: Geolocator 14.0.2, Geocoding 4.0.0
 - **Other**: intl, url_launcher, flutter_native_splash
+
+## 🧭 Architecture
+
+- **Clean-ish Layers**: `features/*` split into data, domain, usecases, and presentation (controllers/pages).
+- **GetX**: Bindings + controllers manage DI and state; part files keep `ServiceController` organized (services, progress, locations, comments).
+- **Data Sources**: Supabase for remote CRUD; Hive for offline progress cache per user/service.
+- **UI**: Feature-first pages (home, service detail, locations, comments, progress) with reusable cards and sheets.
 
 ## 📁 Project Structure
 
@@ -66,7 +74,11 @@ cd delleni_app
 flutter pub get
 ```
 
-### 3. Configure Native Splash Screen
+### 3. Configure Supabase
+- Set Supabase URL and anon/public key in your client provider (see `lib/core/supabase_client_provider.dart`).
+- Ensure `services`, `locations`, `comments`, and `users` tables exist with expected columns.
+
+### 4. Configure Native Splash Screen
 ```bash
 flutter pub run flutter_native_splash:create
 ```
@@ -158,6 +170,12 @@ Run tests using:
 ```bash
 flutter test
 ```
+
+## 🔍 Quick Dev Notes
+
+- Services, comments, and locations are fetched from Supabase; ensure network + auth tokens are valid.
+- User progress is keyed by `userId_serviceId` in the Hive box `user_progress`.
+- Map directions rely on device/location permissions; fallbacks show destination search if origin is unknown.
 
 ## 📝 Dependencies
 
