@@ -9,11 +9,10 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ee955dd5-b5b5-4658-90e4-d83f0a456dd9" name="Changes" comment=".">
-      <change afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/locations.dart" afterDir="false" />
+    <list default="true" id="ee955dd5-b5b5-4658-90e4-d83f0a456dd9" name="Changes" comment="feat(locations): add fetchAllLocations() to ServiceController and update LocationsPage to show all offices&#10;&#10;- Implemented fetchAllLocations() query for locations table&#10;- Updated LocationsPage to load all locations instead of service-specific ones&#10;- Ensured locations observable stays sync across sheets and pages">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/controllers/service_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/controllers/service_controller.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/main_layout.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/main_layout.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/delleni_app/lib/app/pages/society_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/delleni_app/lib/app/pages/society_page.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -264,7 +263,15 @@
       <option name="project" value="LOCAL" />
       <updated>1765490266969</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="feat(locations): add fetchAllLocations() to ServiceController and update LocationsPage to show all offices&#10;&#10;- Implemented fetchAllLocations() query for locations table&#10;- Updated LocationsPage to load all locations instead of service-specific ones&#10;- Ensured locations observable stays sync across sheets and pages">
+      <option name="closed" value="true" />
+      <created>1765494420823</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1765494420823</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -297,7 +304,8 @@
     <MESSAGE value="&quot;feat: restructure navigation with MainLayout for consistent bottom nav&#10;&#10;- Create MainLayout.dart to handle bottom navigation for entire app&#10;- Split HomePage into HomeContent (content only) and MainLayout (navigation)&#10;- Remove bottom navigation from SocietyPage and UserProgressScreen&#10;- Update main.dart to use MainLayout after login&#10;- Simplify page structure: Login → MainLayout → All pages with persistent nav" />
     <MESSAGE value="feat(society): add SocietyPage community screen synced with comments&#10;&#10;- Implemented SocietyPage UI (stats, contributors, community tips)&#10;- Synced comment list with ServiceController.comments&#10;- Added like interactions and time-ago formatting&#10;- Removed replies logic (not used in current model)&#10;- Prepared page for integration with bottom navigation (&quot;المجتمع&quot;)" />
     <MESSAGE value="." />
-    <option name="LAST_COMMIT_MESSAGE" value="." />
+    <MESSAGE value="feat(locations): add fetchAllLocations() to ServiceController and update LocationsPage to show all offices&#10;&#10;- Implemented fetchAllLocations() query for locations table&#10;- Updated LocationsPage to load all locations instead of service-specific ones&#10;- Ensured locations observable stays sync across sheets and pages" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(locations): add fetchAllLocations() to ServiceController and update LocationsPage to show all offices&#10;&#10;- Implemented fetchAllLocations() query for locations table&#10;- Updated LocationsPage to load all locations instead of service-specific ones&#10;- Ensured locations observable stays sync across sheets and pages" />
   </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">
